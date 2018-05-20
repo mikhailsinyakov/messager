@@ -1,0 +1,31 @@
+{
+  "name": "messager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikhailsinyakov/messager.git"
+  },
+  "author": "Mikhail Sinyakov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mikhailsinyakov/messager/issues"
+  },
+  "homepage": "https://github.com/mikhailsinyakov/messager#readme",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.2",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "mongoose": "^5.0.15",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "websocket": "^1.0.25"
+  }
+}
