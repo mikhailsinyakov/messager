@@ -28,7 +28,7 @@ module.exports = function(passport) {
                 newUser.save((err, user) => {
                     if (err) return done(err);
                     return done(null, user);
-                })
+                });
             }
         });
 
