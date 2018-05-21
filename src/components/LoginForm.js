@@ -5,11 +5,14 @@ export default class LoginForm extends React.Component {
         super(props);
         this.state = {
             passwordInput: '',
-            confirmPasswordInput: ''
+            confirmPasswordInput: '',
+            errors: []
         };
         this.handlePasswordInput = this.handlePasswordInput.bind(this);
         this.handleConfirmPasswordInput = this.handleConfirmPasswordInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.addErrorToErrorsArray = this.addErrorToErrorsArray.bind(this);
+        this.deleteErrorFromErrorsArray = this.deleteErrorFromErrorsArray.bind(this);
     }
 
     handlePasswordInput(value) {
@@ -22,11 +25,42 @@ export default class LoginForm extends React.Component {
 
     handleSubmit(e) {
         if (this.props.form == 'signup') {
-            if (this.state.passwordInput != this.state.confirmPasswordInput ||
-                this.state.passwordInput.length < 6) {
+            const diffPasswords = 'Указанные пароли не совпадают';
+            const smallPasswords = 'Длина пароля должна быть не менее 6 символов';
+            let errors = this.state.errors;
+
+            if (this.state.passwordInput != this.state.confirmPasswordInput) {
+                errors = this.addErrorToErrorsArray(diffPasswords, errors);
                 e.preventDefault();
             }
+            else {
+                errors = this.deleteErrorFromErrorsArray(diffPasswords, errors);
+            }
+
+            if (this.state.passwordInput.length < 6 || 
+                this.state.confirmPasswordInput.length < 6) {
+                errors = this.addErrorToErrorsArray(smallPasswords, errors);
+                e.preventDefault();
+            }
+            else {
+                errors = this.deleteErrorFromErrorsArray(smallPasswords, errors);
+            }
+            this.setState({errors});
         }
+    }
+
+    addErrorToErrorsArray(error, errors) {
+        const isErrorExist = !!errors.filter(existedError => error == existedError).length;
+        if (!isErrorExist) {
+            errors.push(error);
+        }
+        return errors;
+    }
+
+    deleteErrorFromErrorsArray(error) {
+        let errors = this.state.errors;
+        errors = errors.filter(existedError => error != existedError);
+        return errors;
     }
 
     render() {
@@ -43,21 +77,31 @@ export default class LoginForm extends React.Component {
         const btnName = this.props.form == 'signup' ? 'Зарегистрироваться'
                                                     : 'Войти';
 
+        let message = null;
+
+        if (this.state.errors.length) {
+            const errors = this.state.errors.map((error, i) => <p key={i}>{error}</p>);
+            message = <div>{errors}</div>;
+        }
+
         return (
-            <form action={action} method="POST">
-                <input type="text" name="username" 
-                        placeholder="Введите имя, ник" required />
-                <br/>
-                <input type="password" name="password" 
-                        onChange={e => this.handlePasswordInput(e.target.value)}
-                        value={this.state.passwordInput}
-                        placeholder="Введите пароль" required />
-                <br/>
-                {this.props.form == 'signup' && confirmPasswordInput}
-                <button type="submit" onClick={e => this.handleSubmit(e)}>
-                    {btnName}
-                </button>
-            </form>
+            <div>
+                <form action={action} method="POST">
+                    <input type="text" name="username" 
+                            placeholder="Введите имя, ник" required />
+                    <br/>
+                    <input type="password" name="password" 
+                            onChange={e => this.handlePasswordInput(e.target.value)}
+                            value={this.state.passwordInput}
+                            placeholder="Введите пароль" required />
+                    <br/>
+                    {this.props.form == 'signup' && confirmPasswordInput}
+                    <button type="submit" onClick={e => this.handleSubmit(e)}>
+                        {btnName}
+                    </button>
+                </form>
+                {message}
+            </div>
         );
     }
     
