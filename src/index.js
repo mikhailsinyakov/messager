@@ -14,9 +14,33 @@ class App extends React.Component {
             loginForm: null
         };
 
+        this.sendGetRequest = this.sendGetRequest.bind(this);
+        this.addUserToStateOrShowForm = this.addUserToStateOrShowForm.bind(this);
         this.showLoginForm = this.showLoginForm.bind(this);
         this.showSignupForm = this.showSignupForm.bind(this);
 
+    }
+
+    sendGetRequest(url) {
+        return new Promise((resolve, reject) => {
+            const options = {
+                credentials: 'include'
+            };
+            fetch(url, options)
+                .then(response => response.text())
+                .then(username => resolve(username))
+                .catch(err => reject(err));
+        });
+        
+    }
+
+    addUserToStateOrShowForm(username) {
+        if (username) {
+            this.setState({user: username});
+        }
+        else {
+            this.showLoginForm();
+        }
     }
 
     showLoginForm() {
@@ -27,6 +51,12 @@ class App extends React.Component {
         this.setState({loginForm: 'signup'});
     }
 
+    componentDidMount() {
+        this.sendGetRequest('/api/getUsername')
+            .then(this.addUserToStateOrShowForm)
+            .catch(err => console.error(err));
+    }
+
     render() {
 
         const loginForm = this.state.loginForm ? <LoginForm form={this.state.loginForm} />
@@ -35,7 +65,8 @@ class App extends React.Component {
         return (
             <div>
                 <Header user={this.state.user} showLoginForm={this.showLoginForm}
-                        showSignupForm={this.showSignupForm}/>
+                        showSignupForm={this.showSignupForm} 
+                        sendGetRequest={this.sendGetRequest}/>
                 {loginForm}
             </div>
         );

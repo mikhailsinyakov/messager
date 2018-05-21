@@ -9,7 +9,16 @@ export default function Header (props) {
             <button type="button" onClick={props.showSignupForm}>Зарегистрироваться</button>
         </span>
     );
-    const logout = <button type="button">Выйти</button>;
+
+    function loggingOut() {
+        props.sendGetRequest('/logout')
+                .then(() => location.reload())
+                .catch(err => console.error(err));
+    }
+
+    const logout = <button type="button" onClick={loggingOut}>
+                        Выйти
+                    </button>;
     const logging = <p>{props.user ? logout : login}</p>
 
     return (
