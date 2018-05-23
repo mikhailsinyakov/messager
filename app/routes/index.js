@@ -15,21 +15,42 @@ module.exports = app => {
     });
             
     app.post('/login', 
-        passport.authenticate('local-login', {
-            successRedirect: '/',
-            failureRedirect: '/'
-        })
-    );
+        (req, res, next) => {
+            passport.authenticate('local-login', (err, user, info) => {
+                if (err) {
+                    return res.status(500).send('Произошла ошибка, попробуйте снова');
+                }
+                if (!user) {
+                    return res.status(401).send('Неверное имя пользователя или пароль');
+                }
+                req.logIn(user, err => {
+                    if (err) {
+                        return res.status(500).send('Произошла ошибка, попробуйте снова');
+                    }
+                    return res.redirect('/');
+                })
+            })(req, res, next);
+        });
 
     app.post('/signup', 
-        passport.authenticate('local-signup', {
-            successRedirect: '/',
-            failureRedirect: '/'
-        })
-    );
+    (req, res, next) => {
+        passport.authenticate('local-signup', (err, user, info) => {
+            if (err) {
+                return res.status(500).send('Произошла ошибка, попробуйте снова');
+            }
+            if (!user) {
+                return res.status(401).send('Пользователь с таким именем уже существует');
+            }
+            req.logIn(user, err => {
+                if (err) {
+                    return res.status(500).send('Произошла ошибка, попробуйте снова');
+                }
+                return res.redirect('/');
+            })
+        })(req, res, next);
+    });
 
     app.get('/logout', (req, res) => {
-        console.log('logout')
         req.logout();
         res.send(200);
     })
