@@ -11,8 +11,7 @@ export default class LoginForm extends React.Component {
         this.handlePasswordInput = this.handlePasswordInput.bind(this);
         this.handleConfirmPasswordInput = this.handleConfirmPasswordInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.addErrorToErrorsArray = this.addErrorToErrorsArray.bind(this);
-        this.deleteErrorFromErrorsArray = this.deleteErrorFromErrorsArray.bind(this);
+        this.sendCredentials = this.sendCredentials.bind(this);
     }
 
     handlePasswordInput(value) {
@@ -24,47 +23,57 @@ export default class LoginForm extends React.Component {
     }
 
     handleSubmit(e) {
+        e.preventDefault();
+        const action = `/${this.props.form}`;
         if (this.props.form == 'signup') {
-            const diffPasswords = 'Указанные пароли не совпадают';
-            const smallPasswords = 'Длина пароля должна быть не менее 6 символов';
-            let errors = this.state.errors;
+            const diffPasswordsMsg = 'Указанные пароли не совпадают';
+            const smallPasswordsMsg = 'Длина пароля должна быть не менее 6 символов';
+            let errors = [];
 
-            if (this.state.passwordInput != this.state.confirmPasswordInput) {
-                errors = this.addErrorToErrorsArray(diffPasswords, errors);
-                e.preventDefault();
-            }
-            else {
-                errors = this.deleteErrorFromErrorsArray(diffPasswords, errors);
-            }
+            const arePasswordsEqual = this.state.passwordInput == this.state.confirmPasswordInput;
+            const havePasswordsLessThan6Char = (this.state.passwordInput.length < 6 || 
+                                                this.state.confirmPasswordInput.length < 6);
 
-            if (this.state.passwordInput.length < 6 || 
-                this.state.confirmPasswordInput.length < 6) {
-                errors = this.addErrorToErrorsArray(smallPasswords, errors);
-                e.preventDefault();
-            }
-            else {
-                errors = this.deleteErrorFromErrorsArray(smallPasswords, errors);
-            }
+            if (!arePasswordsEqual) errors.push(diffPasswordsMsg);
+            if (havePasswordsLessThan6Char) errors.push(smallPasswordsMsg);
+            if (arePasswordsEqual && !havePasswordsLessThan6Char) this.sendCredentials(action);
+
             this.setState({errors});
         }
-    }
-
-    addErrorToErrorsArray(error, errors) {
-        const isErrorExist = !!errors.filter(existedError => error == existedError).length;
-        if (!isErrorExist) {
-            errors.push(error);
+        else {
+            this.sendCredentials(action);
         }
-        return errors;
     }
 
-    deleteErrorFromErrorsArray(error) {
-        let errors = this.state.errors;
-        errors = errors.filter(existedError => error != existedError);
-        return errors;
+    sendCredentials(action) {
+        const username = document.querySelector('input[name="username"]').value;
+        const password = this.state.passwordInput;
+        const credentials = `username=${username}&password=${password}`;
+        const myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/x-www-form-urlencoded');
+        const options = {
+            method: 'POST',
+            body: credentials,
+            headers: myHeaders,
+            credentials: 'include'
+        };
+        fetch(action, options)
+            .then(response => {
+                return new Promise((resolve, reject) => {
+                    if (response.ok) {
+                        return location.reload(true);
+                    }
+                    resolve(response.text());
+                });
+            })
+            .then(response => {
+                const errors = [response];
+                this.setState({errors});
+            })
+            .catch(err => console.error(err));
     }
 
     render() {
-        const action = `/${this.props.form}`;
         const confirmPasswordInput = (
             <span>
                 <input type="password" name="confirmPassword" 
@@ -86,7 +95,7 @@ export default class LoginForm extends React.Component {
 
         return (
             <div>
-                <form action={action} method="POST">
+                <form id="loggingForm">
                     <input type="text" name="username" 
                             placeholder="Введите имя, ник" required />
                     <br/>

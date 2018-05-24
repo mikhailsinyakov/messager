@@ -10,16 +10,25 @@ export default function Header (props) {
         </span>
     );
 
+    const logout = (
+        <button type="button" onClick={loggingOut}>
+            Выйти
+        </button>
+    );
+
     function loggingOut() {
         props.sendGetRequest('/logout')
                 .then(() => location.reload())
                 .catch(err => console.error(err));
     }
 
-    const logout = <button type="button" onClick={loggingOut}>
-                        Выйти
-                    </button>;
-    const logging = <p>{props.user ? logout : login}</p>
+    const logging = (
+        <p>
+            {props.gotUsername ? props.user ? logout 
+                                            : login 
+                                : null}
+        </p>
+    );
 
     return (
         <header>

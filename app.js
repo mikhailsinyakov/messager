@@ -4,12 +4,12 @@ const express = require('express');
 const http = require('http');
 const mongoose = require('mongoose');
 const passport = require('passport');
+require('dotenv').config();
 
 const routes = require('./app/routes');
 const passportConfig = require('./app/config/passport');
 const appConfig = require('./app/config/app');
 
-require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);

@@ -11,7 +11,8 @@ class App extends React.Component {
         super(props);
         this.state = {
             user: null,
-            loginForm: null
+            loginForm: null,
+            gotUsername: false
         };
 
         this.sendGetRequest = this.sendGetRequest.bind(this);
@@ -36,10 +37,11 @@ class App extends React.Component {
 
     addUserToStateOrShowForm(username) {
         if (username) {
-            this.setState({user: username});
+            this.setState({user: username, gotUsername: true});
         }
         else {
             this.showLoginForm();
+            this.setState({gotUsername: true});
         }
     }
 
@@ -64,7 +66,8 @@ class App extends React.Component {
 
         return (
             <div>
-                <Header user={this.state.user} showLoginForm={this.showLoginForm}
+                <Header user={this.state.user} gotUsername={this.state.gotUsername}
+                        showLoginForm={this.showLoginForm}
                         showSignupForm={this.showSignupForm} 
                         sendGetRequest={this.sendGetRequest}/>
                 {loginForm}

@@ -15,8 +15,8 @@ module.exports = app => {
     });
             
     app.post('/login', 
-        (req, res, next) => {
-            passport.authenticate('local-login', (err, user, info) => {
+        (req, res) => {
+            passport.authenticate('local-login', (err, user) => {
                 if (err) {
                     return res.status(500).send('Произошла ошибка, попробуйте снова');
                 }
@@ -27,14 +27,14 @@ module.exports = app => {
                     if (err) {
                         return res.status(500).send('Произошла ошибка, попробуйте снова');
                     }
-                    return res.redirect('/');
+                    return res.sendStatus(200);
                 })
-            })(req, res, next);
+            })(req, res);
         });
 
     app.post('/signup', 
-    (req, res, next) => {
-        passport.authenticate('local-signup', (err, user, info) => {
+    (req, res) => {
+        passport.authenticate('local-signup', (err, user) => {
             if (err) {
                 return res.status(500).send('Произошла ошибка, попробуйте снова');
             }
@@ -45,14 +45,14 @@ module.exports = app => {
                 if (err) {
                     return res.status(500).send('Произошла ошибка, попробуйте снова');
                 }
-                return res.redirect('/');
+                return res.sendStatus(200);
             })
-        })(req, res, next);
+        })(req, res);
     });
 
     app.get('/logout', (req, res) => {
         req.logout();
-        res.send(200);
+        res.sendStatus(200);
     })
 
 };
