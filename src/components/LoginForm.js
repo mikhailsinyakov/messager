@@ -4,14 +4,20 @@ export default class LoginForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            usernameInput: '',
             passwordInput: '',
             confirmPasswordInput: '',
             errors: []
         };
+        this.handleUsernameInput = this.handleUsernameInput.bind(this);
         this.handlePasswordInput = this.handlePasswordInput.bind(this);
         this.handleConfirmPasswordInput = this.handleConfirmPasswordInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.sendCredentials = this.sendCredentials.bind(this);
+    }
+
+    handleUsernameInput(value) {
+        this.setState({usernameInput: value});
     }
 
     handlePasswordInput(value) {
@@ -24,19 +30,24 @@ export default class LoginForm extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        const action = `/${this.props.form}`;
-        if (this.props.form == 'signup') {
+        const action = `/${this.props.formType}`;
+        if (this.props.formType == 'signup') {
+            const noUsernameMsg = 'Имя должно содержать минимум 1 символ';
             const diffPasswordsMsg = 'Указанные пароли не совпадают';
             const smallPasswordsMsg = 'Длина пароля должна быть не менее 6 символов';
             let errors = [];
 
+            const haveUsernameLength = this.state.usernameInput.length;
             const arePasswordsEqual = this.state.passwordInput == this.state.confirmPasswordInput;
             const havePasswordsLessThan6Char = (this.state.passwordInput.length < 6 || 
                                                 this.state.confirmPasswordInput.length < 6);
 
+            if (!haveUsernameLength) errors.push(noUsernameMsg);
             if (!arePasswordsEqual) errors.push(diffPasswordsMsg);
             if (havePasswordsLessThan6Char) errors.push(smallPasswordsMsg);
-            if (arePasswordsEqual && !havePasswordsLessThan6Char) this.sendCredentials(action);
+            if (arePasswordsEqual && !havePasswordsLessThan6Char && haveUsernameLength) {
+                this.sendCredentials(action);
+            }
 
             this.setState({errors});
         }
@@ -61,7 +72,8 @@ export default class LoginForm extends React.Component {
             .then(response => {
                 return new Promise((resolve, reject) => {
                     if (response.ok) {
-                        return location.reload(true);
+                        this.props.getUsername();
+                        return;
                     }
                     resolve(response.text());
                 });
@@ -83,7 +95,7 @@ export default class LoginForm extends React.Component {
                 <br/>
             </span>
         );
-        const btnName = this.props.form == 'signup' ? 'Зарегистрироваться'
+        const btnName = this.props.formType == 'signup' ? 'Зарегистрироваться'
                                                     : 'Войти';
 
         let message = null;
@@ -97,6 +109,8 @@ export default class LoginForm extends React.Component {
             <div>
                 <form id="loggingForm">
                     <input type="text" name="username" 
+                            onChange={e => this.handleUsernameInput(e.target.value)}
+                            value={this.state.usernameInput}
                             placeholder="Введите имя, ник" required />
                     <br/>
                     <input type="password" name="password" 
@@ -104,7 +118,7 @@ export default class LoginForm extends React.Component {
                             value={this.state.passwordInput}
                             placeholder="Введите пароль" required />
                     <br/>
-                    {this.props.form == 'signup' && confirmPasswordInput}
+                    {this.props.formType == 'signup' && confirmPasswordInput}
                     <button type="submit" onClick={e => this.handleSubmit(e)}>
                         {btnName}
                     </button>

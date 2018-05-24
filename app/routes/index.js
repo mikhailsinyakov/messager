@@ -52,7 +52,7 @@ module.exports = app => {
 
     app.get('/logout', (req, res) => {
         req.logout();
-        res.sendStatus(200);
+        res.redirect('/');
     })
 
 };

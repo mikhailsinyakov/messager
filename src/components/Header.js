@@ -1,39 +1,34 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 
 export default function Header (props) {
 
-    const greeting = <h1>Добро пожаловать{props.user && `, ${props.user}`}</h1>;
+    const appName = <h1>Мессенджер</h1>;
     const login = (
-        <span>
-            <button type="button" onClick={props.showLoginForm}>Войти</button>
-            <button type="button" onClick={props.showSignupForm}>Зарегистрироваться</button>
-        </span>
+        <ul>
+            <li><Link to='/login'>Войти</Link></li>
+            <li><Link to='/signup'>Зарегистрироваться</Link></li>
+        </ul>
     );
 
     const logout = (
-        <button type="button" onClick={loggingOut}>
-            Выйти
-        </button>
+        <ul>
+            <a href='/logout'>Выйти</a>
+        </ul>
     );
 
-    function loggingOut() {
-        props.sendGetRequest('/logout')
-                .then(() => location.reload())
-                .catch(err => console.error(err));
-    }
-
-    const logging = (
-        <p>
-            {props.gotUsername ? props.user ? logout 
-                                            : login 
-                                : null}
-        </p>
+    const nav = (
+        <nav>
+            {props.updated ? props.user ? logout 
+                                        : login
+                            : null}
+        </nav>
     );
 
     return (
         <header>
-            {greeting}
-            {logging}
+            {appName}
+            {nav}
         </header>
     )
 }

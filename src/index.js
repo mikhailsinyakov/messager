@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import {BrowserRouter} from 'react-router-dom';
 
 import Header from './components/Header';
-import LoginForm from './components/LoginForm';
+import Main from './components/Main';
 
 const app = document.querySelector('#app');
 
@@ -11,15 +12,12 @@ class App extends React.Component {
         super(props);
         this.state = {
             user: null,
-            loginForm: null,
-            gotUsername: false
+            updated: false
         };
 
         this.sendGetRequest = this.sendGetRequest.bind(this);
-        this.addUserToStateOrShowForm = this.addUserToStateOrShowForm.bind(this);
-        this.showLoginForm = this.showLoginForm.bind(this);
-        this.showSignupForm = this.showSignupForm.bind(this);
-
+        this.addUserToState = this.addUserToState.bind(this);
+        this.getUsername = this.getUsername.bind(this);
     }
 
     sendGetRequest(url) {
@@ -35,46 +33,43 @@ class App extends React.Component {
         
     }
 
-    addUserToStateOrShowForm(username) {
-        if (username) {
-            this.setState({user: username, gotUsername: true});
-        }
-        else {
-            this.showLoginForm();
-            this.setState({gotUsername: true});
-        }
+    addUserToState(username) {
+        const user = username ? username : null;
+        this.setState({user});
     }
 
-    showLoginForm() {
-        this.setState({loginForm: 'login'});
-    }
-
-    showSignupForm() {
-        this.setState({loginForm: 'signup'});
+    getUsername() {
+        this.sendGetRequest('/api/getUsername')
+            .then(this.addUserToState)
+            .catch(err => console.error(err));
     }
 
     componentDidMount() {
-        this.sendGetRequest('/api/getUsername')
-            .then(this.addUserToStateOrShowForm)
-            .catch(err => console.error(err));
+        this.getUsername();
+    }
+
+    componentWillUpdate() {
+        if (!this.state.updated) {
+            this.setState({updated: true});
+        }
     }
 
     render() {
 
-        const loginForm = this.state.loginForm ? <LoginForm form={this.state.loginForm} />
-                                                : null;
-
         return (
             <div>
-                <Header user={this.state.user} gotUsername={this.state.gotUsername}
-                        showLoginForm={this.showLoginForm}
-                        showSignupForm={this.showSignupForm} 
+                <Header user={this.state.user} updated={this.state.updated}
                         sendGetRequest={this.sendGetRequest}/>
-                {loginForm}
+                <Main user={this.state.user} getUsername={this.getUsername}
+                        updated={this.state.updated}/>
             </div>
         );
     }
     
 }
 
-ReactDOM.render(<App/>, app);
+ReactDOM.render((
+    <BrowserRouter>
+        <App/>
+    </BrowserRouter>
+), app);
