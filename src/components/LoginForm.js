@@ -29,7 +29,6 @@ export default class LoginForm extends React.Component {
     }
 
     handleSubmit(e) {
-        e.preventDefault();
         const action = `/${this.props.formType}`;
         if (this.props.formType == 'signup') {
             const noUsernameMsg = 'Имя должно содержать минимум 1 символ';
@@ -66,7 +65,7 @@ export default class LoginForm extends React.Component {
             method: 'POST',
             body: credentials,
             headers: myHeaders,
-            credentials: 'include'
+            credentials: 'same-origin'
         };
         fetch(action, options)
             .then(response => {
@@ -91,10 +90,13 @@ export default class LoginForm extends React.Component {
                 <input type="password" name="confirmPassword" 
                         onChange={e => this.handleConfirmPasswordInput(e.target.value)}
                         value={this.state.confirmPasswordInput}
-                        placeholder="Повторите пароль" required />
+                        placeholder="Повторите пароль" required 
+                        autocomplete="new-password"/>
                 <br/>
             </span>
         );
+        const autocompletePsw = this.props.formType == 'signup' ? 'new-password'
+                                                                : 'current-password';
         const btnName = this.props.formType == 'signup' ? 'Зарегистрироваться'
                                                     : 'Войти';
 
@@ -111,15 +113,17 @@ export default class LoginForm extends React.Component {
                     <input type="text" name="username" 
                             onChange={e => this.handleUsernameInput(e.target.value)}
                             value={this.state.usernameInput}
-                            placeholder="Введите имя, ник" required />
+                            placeholder="Введите имя, ник" required 
+                            autoComplete="username"/>
                     <br/>
                     <input type="password" name="password" 
                             onChange={e => this.handlePasswordInput(e.target.value)}
                             value={this.state.passwordInput}
-                            placeholder="Введите пароль" required />
+                            placeholder="Введите пароль" required
+                            autoComplete={autocompletePsw} />
                     <br/>
                     {this.props.formType == 'signup' && confirmPasswordInput}
-                    <button type="submit" onClick={e => this.handleSubmit(e)}>
+                    <button type="button" onClick={e => this.handleSubmit(e)}>
                         {btnName}
                     </button>
                 </form>

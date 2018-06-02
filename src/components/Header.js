@@ -11,15 +11,16 @@ export default function Header (props) {
         </ul>
     );
 
-    const logout = (
+    const links = (
         <ul>
-            <a href='/logout'>Выйти</a>
+            <li><Link to='/settings'>Настройки</Link></li>
+            <li><a href='/logout'>Выйти</a></li>
         </ul>
     );
 
     const nav = (
         <nav>
-            {props.updated ? props.user ? logout 
+            {props.updated ? props.username ? links 
                                         : login
                             : null}
         </nav>

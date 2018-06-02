@@ -11,7 +11,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: null,
+            username: null,
             updated: false
         };
 
@@ -23,23 +23,23 @@ class App extends React.Component {
     sendGetRequest(url) {
         return new Promise((resolve, reject) => {
             const options = {
-                credentials: 'include'
+                credentials: 'same-origin'
             };
             fetch(url, options)
                 .then(response => response.text())
-                .then(username => resolve(username))
+                .then(response => resolve(response))
                 .catch(err => reject(err));
         });
         
     }
 
     addUserToState(username) {
-        const user = username ? username : null;
-        this.setState({user});
+        username = username ? username : null;
+        this.setState({username});
     }
 
     getUsername() {
-        this.sendGetRequest('/api/getUsername')
+        this.sendGetRequest('/api/users/current?onlyUsername=true')
             .then(this.addUserToState)
             .catch(err => console.error(err));
     }
@@ -58,10 +58,10 @@ class App extends React.Component {
 
         return (
             <div>
-                <Header user={this.state.user} updated={this.state.updated}
+                <Header username={this.state.username} updated={this.state.updated}
                         sendGetRequest={this.sendGetRequest}/>
-                <Main user={this.state.user} getUsername={this.getUsername}
-                        updated={this.state.updated}/>
+                <Main username={this.state.username} getUsername={this.getUsername}
+                        updated={this.state.updated} sendGetRequest={this.sendGetRequest}/>
             </div>
         );
     }

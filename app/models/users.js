@@ -12,7 +12,14 @@ const User = new mongoose.Schema({
     password: {
         type: String,
         required: true
-    }
+    },
+    firstName: String,
+    lastName: String,
+    phoneNumber: Number,
+    photo: String,
+    city: String,
+    birthDate: String,
+    aboutYourself: String
 });
 
 User.methods.generateHash = function(password) {
