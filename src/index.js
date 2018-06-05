@@ -1,10 +1,14 @@
+'use strict';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter} from 'react-router-dom';
 
+import RequestController from '../app/controllers/requestController.client';
 import Header from './components/Header';
 import Main from './components/Main';
 
+const requestController = new RequestController();
 const app = document.querySelector('#app');
 
 class App extends React.Component {
@@ -15,33 +19,29 @@ class App extends React.Component {
             updated: false
         };
 
-        this.sendGetRequest = this.sendGetRequest.bind(this);
         this.addUserToState = this.addUserToState.bind(this);
         this.getUsername = this.getUsername.bind(this);
+
+        this.testFetch = this.testFetch.bind(this);
     }
 
-    sendGetRequest(url) {
-        return new Promise((resolve, reject) => {
-            const options = {
-                credentials: 'same-origin'
-            };
-            fetch(url, options)
-                .then(response => response.text())
-                .then(response => resolve(response))
-                .catch(err => reject(err));
-        });
-        
-    }
-
-    addUserToState(username) {
-        username = username ? username : null;
-        this.setState({username});
+    addUserToState(data) {
+        if (data.status == 'Success') {
+            const username = data.username ? data.username : null;
+            this.setState({username});
+        }
     }
 
     getUsername() {
-        this.sendGetRequest('/api/users/current?onlyUsername=true')
+        requestController.sendRequest('/api/users/current?onlyUsername=true')
             .then(this.addUserToState)
-            .catch(err => console.error(err));
+            .catch(err => console.error('Network error'));
+    }
+
+    testFetch() {
+        requestController.testRequest()
+            .then(data => console.log(data))
+            .catch(err => console.error('error'))
     }
 
     componentDidMount() {
@@ -58,10 +58,10 @@ class App extends React.Component {
 
         return (
             <div>
-                <Header username={this.state.username} updated={this.state.updated}
-                        sendGetRequest={this.sendGetRequest}/>
+                <Header username={this.state.username} updated={this.state.updated}/>
                 <Main username={this.state.username} getUsername={this.getUsername}
-                        updated={this.state.updated} sendGetRequest={this.sendGetRequest}/>
+                        updated={this.state.updated}/>
+                <button type="button" onClick={this.testFetch}>Test fetch</button>
             </div>
         );
     }
