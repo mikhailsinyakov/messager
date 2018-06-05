@@ -16,7 +16,6 @@ const User = new mongoose.Schema({
     firstName: String,
     lastName: String,
     phoneNumber: Number,
-    photo: String,
     city: String,
     birthDate: String,
     aboutYourself: String

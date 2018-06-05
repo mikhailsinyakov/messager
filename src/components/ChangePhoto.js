@@ -10,7 +10,8 @@ export default class ChangePhoto extends React.Component {
         super(props);
         this.state = {
             shownFileInput: false,
-            file: null
+            file: null,
+            error: null
         };
 
         this.toggleFileInput = this.toggleFileInput.bind(this);
@@ -35,8 +36,14 @@ export default class ChangePhoto extends React.Component {
         formData.append('avatar', this.state.file);
 
         requestController.sendFile(action, formData)
-            .then(data => console.log(data))
-            .catch(err => console.error(err));
+            .then(data => {
+                if (data.status != 'Success') {
+                    return this.setState({error: data.message});
+                }
+                this.props.updatePhoto();
+                this.setState({shownFileInput: false, error: null});
+            })
+            .catch(err => console.error(err/*'Network error'*/));
     }
 
     render() {
@@ -48,14 +55,17 @@ export default class ChangePhoto extends React.Component {
                 </button>
             );
         }
+        const error = this.state.error ? <p>{this.state.error}</p> : null;
 
         return (
-            <form id="addAvatar" action="/api/users/current/files/avatar" method="POST" 
-                    encType="multipart/form-data">
-                <input type="file" accept="image/*" name="avatar"
-                    onChange={this.handleChange} />
-                <button type="submit" onClick={this.handleSubmit}>Загрузить</button>
-            </form>
+            <div>
+                <form id="addAvatar">
+                    <input type="file" accept="image/jpeg" name="avatar"
+                        onChange={this.handleChange} />
+                    <button type="submit" onClick={this.handleSubmit}>Загрузить</button>
+                </form>
+                {error}
+            </div>
         );
     }
 }

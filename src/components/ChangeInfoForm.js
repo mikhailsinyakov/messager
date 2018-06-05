@@ -25,6 +25,7 @@ export default class ChangeInfoForm extends React.Component {
         this.handleInput = this.handleInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
+
     getUserInfo() {
         requestController.sendRequest(`/api/users/current`)
             .then(this.addUserInfoToState)
@@ -37,8 +38,6 @@ export default class ChangeInfoForm extends React.Component {
             aboutYourself = ''} = userInfo;
         let {phoneNumber = ''} = userInfo;
         phoneNumber = this.toPrettierFormat(phoneNumber);
-
-        if (userInfo.photo) this.props.setPhotoUrl(userInfo.photo);
 
         this.setState({firstName, lastName, phoneNumber, 
                         city, birthDate, aboutYourself});

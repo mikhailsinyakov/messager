@@ -7,26 +7,30 @@ import ChangePhoto from './ChangePhoto';
 export default class Settings extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
-            photoUrl: ''
+            imgSrc: `photos/${this.props.username}-avatar.jpg?ver=${new Date().getTime()}`
         };
 
-        this.setPhotoUrl = this.setPhotoUrl.bind(this);
+        this.handleImgError = this.handleImgError.bind(this);
+        this.updateImg = this.updateImg.bind(this);
     }
 
-    setPhotoUrl(photoUrl) {
-        this.setState({photoUrl});
+    handleImgError() {
+        this.setState({imgSrc: 'photos/placeholder.png'});
+    }
+
+    updateImg() {
+        const imgSrc = `photos/${this.props.username}-avatar.jpg?ver=${new Date().getTime()}`;
+        this.setState({imgSrc});
     }
 
     render() {
-
-        const imgSrc = this.state.photo ? this.state.photo : 'photos/placeholder.png';
         return (
             <div id="settings">
-                <img src={imgSrc} width={100} height={100} />
-                <ChangePhoto />
-                <ChangeInfoForm username={this.props.username} 
-                    setPhotoUrl={this.setPhotoUrl}/>
+                <img src={this.state.imgSrc} width={100} onError={this.handleImgError} />
+                <ChangePhoto updatePhoto={this.updateImg}/>
+                <ChangeInfoForm username={this.props.username} />
             </div>
         );
     }

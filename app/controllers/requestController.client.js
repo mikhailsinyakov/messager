@@ -33,8 +33,9 @@ export default function () {
 
     this.sendFile = (url, body) => {
         const method = 'PUT';
+        const mode = 'same-origin';
 
-        const options = {method, body, credentials};
+        const options = {method, body, credentials, mode};
 
         return this.sendRequest(url, options);
     };
