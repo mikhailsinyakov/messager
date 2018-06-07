@@ -28,7 +28,7 @@ export default class Settings extends React.Component {
     render() {
         return (
             <div id="settings">
-                <img src={this.state.imgSrc} width={100} onError={this.handleImgError} />
+                <img src={this.state.imgSrc} height={200} onError={this.handleImgError} />
                 <ChangePhoto updatePhoto={this.updateImg}/>
                 <ChangeInfoForm username={this.props.username} />
             </div>
