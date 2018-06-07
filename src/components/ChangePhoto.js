@@ -60,7 +60,7 @@ export default class ChangePhoto extends React.Component {
         return (
             <div>
                 <form id="addAvatar">
-                    <input type="file" accept="image/jpeg" name="avatar"
+                    <input type="file" accept="image/*" name="avatar"
                         onChange={this.handleChange} />
                     <button type="submit" onClick={this.handleSubmit}>Загрузить</button>
                 </form>

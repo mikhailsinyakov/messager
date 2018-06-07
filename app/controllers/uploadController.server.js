@@ -5,7 +5,7 @@ const resizeImage = require('./resizeImage');
 const fs = require('fs');
 
 const imgFilter = (req, file, cb) => {
-    if (file.mimetype == 'image/jpeg') {
+    if (/image\/\w+/.exec(file.mimetype)) {
         cb(null, true);
     }
     else cb(null, false);
@@ -48,7 +48,7 @@ module.exports = function () {
                         .catch(err => res.status(500).send({status: 'Server error', message: err}));
             }
             const status = 'Unsupported media type';
-            const message = 'Выберите файл с расширением jpg или jpeg';
+            const message = 'Выберите изображение';
             return res.status(415).send({status, message})
         });
     };
