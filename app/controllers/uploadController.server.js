@@ -49,7 +49,7 @@ module.exports = function () {
             }
             const status = 'Unsupported media type';
             const message = 'Выберите изображение';
-            return res.status(415).send({status, message})
+            return res.status(415).send({status, message});
         });
     };
 

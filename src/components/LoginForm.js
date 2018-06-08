@@ -33,10 +33,10 @@ export default class LoginForm extends React.Component {
         const smallPasswordsMsg = 'Длина пароля должна быть не менее 6 символов';
         const errors = [];
 
-        const haveUsernameLength = this.state.usernameInput.length;
-        const arePasswordsEqual = this.state.passwordInput == this.state.confirmPasswordInput;
-        const havePasswordsLessThan6Char = (this.state.passwordInput.length < 6 || 
-                                                this.state.confirmPasswordInput.length < 6);
+        const haveUsernameLength = this.state.username.length;
+        const arePasswordsEqual = this.state.password == this.state.confirmPassword;
+        const havePasswordsLessThan6Char = (this.state.password.length < 6 || 
+                                                this.state.confirmPassword.length < 6);
 
         if (!haveUsernameLength) errors.push(noUsernameMsg);
         if (!arePasswordsEqual) errors.push(diffPasswordsMsg);
@@ -51,6 +51,8 @@ export default class LoginForm extends React.Component {
         const action = `/${this.props.formType}`;
         const username = document.querySelector('input[name="username"]').value;
         const password = this.state.password;
+
+        if (!username.length || !password.length) return;
 
         if (this.props.formType == 'signup') {
             const errors = this.findErrors();
@@ -101,17 +103,17 @@ export default class LoginForm extends React.Component {
                     <input type="text" name="username" 
                             onChange={e => this.handleInput(e.target)}
                             value={this.state.usernameInput}
-                            placeholder="Введите имя, ник" required 
+                            placeholder="Введите имя, ник"
                             autoComplete="username"/>
                     <br/>
                     <input type="password" name="password" 
                             onChange={e => this.handleInput(e.target)}
                             value={this.state.passwordInput}
-                            placeholder="Введите пароль" required
+                            placeholder="Введите пароль"
                             autoComplete={autocompletePsw} />
                     <br/>
                     {this.props.formType == 'signup' && confirmPasswordInput}
-                    <button type="button" onClick={e => this.handleSubmit(e)}>
+                    <button type="button" onClick={this.handleSubmit}>
                         {btnName}
                     </button>
                 </form>

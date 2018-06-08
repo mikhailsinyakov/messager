@@ -1,8 +1,9 @@
 'use strict';
 
 import React from 'react';
-import ChangeInfoForm from './ChangeInfoForm';
+import ChangeInfo from './ChangeInfo';
 import ChangePhoto from './ChangePhoto';
+import ChangePassword from './ChangePassword';
 
 export default class Settings extends React.Component {
     constructor(props) {
@@ -30,7 +31,8 @@ export default class Settings extends React.Component {
             <div id="settings">
                 <img src={this.state.imgSrc} height={200} onError={this.handleImgError} />
                 <ChangePhoto updatePhoto={this.updateImg}/>
-                <ChangeInfoForm username={this.props.username} />
+                <ChangeInfo username={this.props.username} />
+                <ChangePassword username={this.props.username} />
             </div>
         );
     }

@@ -5,7 +5,7 @@ import RequestController from '../../app/controllers/requestController.client';
 
 const requestController = new RequestController();
 
-export default class ChangeInfoForm extends React.Component {
+export default class ChangeInfo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
