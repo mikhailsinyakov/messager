@@ -23,6 +23,8 @@ module.exports = function() {
     this.changeUserInfo = (req, res) => {
         let username = req.params.username;
         if (username == 'current') username = req.user ? req.user.username : null;
+        else return res.status(403).send({status: 'Forbidden'});
+
         if (!username) return res.status(404).send({status: 'Not found'});
 
         const newPropsObj = req.body;

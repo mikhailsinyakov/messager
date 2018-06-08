@@ -21,8 +21,6 @@ class App extends React.Component {
 
         this.addUserToState = this.addUserToState.bind(this);
         this.getUsername = this.getUsername.bind(this);
-
-        this.testFetch = this.testFetch.bind(this);
     }
 
     addUserToState(data) {
@@ -36,12 +34,6 @@ class App extends React.Component {
         requestController.sendRequest('/api/users/current?onlyUsername=true')
             .then(this.addUserToState)
             .catch(err => console.error('Network error'));
-    }
-
-    testFetch() {
-        requestController.testRequest()
-            .then(data => console.log(data))
-            .catch(err => console.error('error'))
     }
 
     componentDidMount() {
@@ -61,7 +53,6 @@ class App extends React.Component {
                 <Header username={this.state.username} updated={this.state.updated}/>
                 <Main username={this.state.username} getUsername={this.getUsername}
                         updated={this.state.updated}/>
-                <button type="button" onClick={this.testFetch}>Test fetch</button>
             </div>
         );
     }
