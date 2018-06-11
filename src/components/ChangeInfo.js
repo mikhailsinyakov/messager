@@ -8,55 +8,15 @@ const requestController = new RequestController();
 export default class ChangeInfo extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            firstName: '',
-            lastName: '',
-            phoneNumber: '',
-            city: '',
-            birthDate: '',
-            aboutYourself: ''
-        };
 
-        this.getUserInfo = this.getUserInfo.bind(this);
-        this.addUserInfoToState = this.addUserInfoToState.bind(this);
+        this.state = this.props.infoState;
+
         this.checkValueThroughRegExp = this.checkValueThroughRegExp.bind(this);
-        this.toPrettierFormat = this.toPrettierFormat.bind(this);
         this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
         this.handleInput = this.handleInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    getUserInfo() {
-        requestController.sendRequest(`/api/users/current`)
-            .then(this.addUserInfoToState)
-            .catch(err => console.error('Network error'));
-    }
-
-    addUserInfoToState(data) {
-        const userInfo = data.user;
-        const {firstName = '', lastName = '', city = '', birthDate = '', 
-            aboutYourself = ''} = userInfo;
-        let {phoneNumber = ''} = userInfo;
-        phoneNumber = this.toPrettierFormat(phoneNumber);
-
-        this.setState({firstName, lastName, phoneNumber, 
-                        city, birthDate, aboutYourself});
-    }
-
-    toPrettierFormat(phoneNumber) {
-        if (!phoneNumber) {
-            return phoneNumber;
-        }
-
-        const phoneNumStr = phoneNumber.toString();
-
-        const area = phoneNumStr.slice(0, 3);
-        const group1 = phoneNumStr.slice(3, 6);
-        const group2 = phoneNumStr.slice(6, 8);
-        const group3 = phoneNumStr.slice(8, 10);
-
-        return `+7 (${area}) ${group1}-${group2}-${group3}`;
-    }
 
     checkValueThroughRegExp(value, regex) {
         if (value) {
@@ -92,18 +52,25 @@ export default class ChangeInfo extends React.Component {
         requestController.sendUserInfo(action, userInfo)
             .then(data => {
                 if (data.status == 'Success') {
-                    this.getUserInfo();
+                    this.props.getUserInfo();
                 }
             }).catch(err => console.error('Network error'));
     }
 
-    componentDidMount() {
-        this.getUserInfo();
+    componentWillUpdate(nextProps) {
+        // If state is changed
+        if (JSON.stringify(this.state) != JSON.stringify(nextProps.infoState)) {
+            this.setState(nextProps.infoState);
+        }
     }
 
     render() {
         const properNameRegex = /[A-ZА-Яa-zа-я\-]*/;
         const phoneNumberRegex = /[\d\-\(\)\+\s]*/;
+
+        if (this.props.matchedUsername != this.props.username) {
+            return <h3>У вас нет доступа к этой странице</h3>;
+        }
 
         return (
             <form id="changeInfo">

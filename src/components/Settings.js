@@ -1,7 +1,6 @@
 'use strict';
 
 import React from 'react';
-import ChangeInfo from './ChangeInfo';
 import ChangePhoto from './ChangePhoto';
 import ChangePassword from './ChangePassword';
 
@@ -30,7 +29,7 @@ export default class Settings extends React.Component {
     }
 
     render() {
-        const params = this.props.match.params;
+        const { params } = this.props.match;
 
         if (params.username != this.props.username) {
             return <h3>У вас нет доступа к этой странице</h3>;
@@ -40,7 +39,6 @@ export default class Settings extends React.Component {
             <div id="settings">
                 <img src={this.state.imgSrc} height={200} onError={this.handleImgError} />
                 <ChangePhoto updatePhoto={this.updateImg}/>
-                <ChangeInfo username={this.props.username} />
                 <ChangePassword username={this.props.username} />
             </div>
         );
