@@ -15,16 +15,15 @@ export default function Header (props) {
 
     const links = (
         <ul>
-            <li><Link to='/settings'>Настройки</Link></li>
-            <li><a href='/logout'>Выйти</a></li>
+            <li><Link to={`/users/${props.username}/settings`} >Настройки</Link></li>
+            <li><Link to='/users'>Поиск</Link></li>
+            <li><a href='/api/logout'>Выйти</a></li>
         </ul>
     );
 
     const nav = (
         <nav>
-            {props.updated ? props.username ? links 
-                                        : login
-                            : null}
+            { props.username ? links : login }
         </nav>
     );
 

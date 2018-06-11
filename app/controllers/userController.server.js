@@ -4,6 +4,27 @@ const Users = require('../models/users');
 
 module.exports = function() {
 
+    this.getUsers = (req, res) => {
+        const query = req.query.query;
+
+        function search(prop) {
+            if (prop && prop.search(query) != -1) {
+                return true;
+            }
+            return false;
+        }
+
+        Users.find({}, {_id: false, password: false, __v: false})
+            .then(users => {
+                users = users.filter(val => {
+                    return search(val.username) ||
+                            search(val.firstName) ||
+                            search(val.lastName);
+                });
+                res.status(200).send({status: 'Success', users});
+            }).catch(err => res.status(500).send({status: 'Server error'}));
+    };
+
     this.getUserInfo = (req, res) => {
         let username = req.params.username;
         const onlyUsername = req.query.onlyUsername;
@@ -16,8 +37,7 @@ module.exports = function() {
                 .then(user => {
                     if (user) return res.status(200).send({status: 'Success', user});
                     res.sendStatus(404);
-                })
-                .catch(err => res.status(500).send({status: 'Server error'}));
+                }).catch(err => res.status(500).send({status: 'Server error'}));
     };
 
     this.changeUserInfo = (req, res) => {

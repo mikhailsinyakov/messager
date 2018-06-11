@@ -9,8 +9,11 @@ export default class Settings extends React.Component {
     constructor(props) {
         super(props);
 
+        this.avatarPath = `/public/photos/${this.props.username}-avatar.jpg`;
+        this.placeholderPath = '/public/photos/placeholder.png';
+
         this.state = {
-            imgSrc: `photos/${this.props.username}-avatar.jpg?ver=${new Date().getTime()}`
+            imgSrc: `${this.avatarPath}?ver=${new Date().getTime()}`
         };
 
         this.handleImgError = this.handleImgError.bind(this);
@@ -18,15 +21,21 @@ export default class Settings extends React.Component {
     }
 
     handleImgError() {
-        this.setState({imgSrc: 'photos/placeholder.png'});
+        this.setState({imgSrc: this.placeholderPath});
     }
 
     updateImg() {
-        const imgSrc = `photos/${this.props.username}-avatar.jpg?ver=${new Date().getTime()}`;
+        const imgSrc = `${this.avatarPath}?ver=${new Date().getTime()}`;
         this.setState({imgSrc});
     }
 
     render() {
+        const params = this.props.match.params;
+
+        if (params.username != this.props.username) {
+            return <h3>У вас нет доступа к этой странице</h3>;
+        }
+
         return (
             <div id="settings">
                 <img src={this.state.imgSrc} height={200} onError={this.handleImgError} />

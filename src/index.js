@@ -47,12 +47,14 @@ class App extends React.Component {
     }
 
     render() {
+        if (!this.state.updated) {
+            return null;
+        }
 
         return (
             <div>
-                <Header username={this.state.username} updated={this.state.updated}/>
-                <Main username={this.state.username} getUsername={this.getUsername}
-                        updated={this.state.updated}/>
+                <Header username={this.state.username} />
+                <Main username={this.state.username} getUsername={this.getUsername}/>
             </div>
         );
     }

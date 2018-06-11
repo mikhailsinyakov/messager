@@ -40,10 +40,5 @@ export default function () {
         return this.sendRequest(url, options);
     };
 
-    this.testRequest = () => {
-        const url = '/testFetch';
-        return this.sendRequest(url);
-    };
-
 
 }

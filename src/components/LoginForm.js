@@ -48,13 +48,13 @@ export default class LoginForm extends React.Component {
     }
 
     handleSubmit(e) {
-        const action = `/${this.props.formType}`;
+        const action = this.props.pathUrl;
         const username = document.querySelector('input[name="username"]').value;
         const password = this.state.password;
 
         if (!username.length || !password.length) return;
 
-        if (this.props.formType == 'signup') {
+        if (this.props.pathUrl == '/signup') {
             const errors = this.findErrors();
             if (errors) this.setState({errors});
             else this.sendCredentials(action, username, password);
@@ -85,10 +85,10 @@ export default class LoginForm extends React.Component {
                 <br/>
             </span>
         );
-        const autocompletePsw = this.props.formType == 'signup' ? 'new-password'
+        const autocompletePsw = this.props.pathUrl == '/signup' ? 'new-password'
                                                                 : 'current-password';
-        const btnName = this.props.formType == 'signup' ? 'Зарегистрироваться'
-                                                    : 'Войти';
+        const btnName = this.props.pathUrl == '/signup' ? 'Зарегистрироваться'
+                                                        : 'Войти';
 
         let message = null;
 
@@ -112,7 +112,7 @@ export default class LoginForm extends React.Component {
                             placeholder="Введите пароль"
                             autoComplete={autocompletePsw} />
                     <br/>
-                    {this.props.formType == 'signup' && confirmPasswordInput}
+                    {this.props.pathUrl == '/signup' && confirmPasswordInput}
                     <button type="button" onClick={this.handleSubmit}>
                         {btnName}
                     </button>

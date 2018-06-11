@@ -10,7 +10,11 @@ const imageController = new ImageController();
 
 module.exports = app => {
 
-    app.get('/', (req, res) => res.sendFile('/index.html'));
+    app.get(/^\/(?!(api\/|public\/))\S*/, (req, res) => {
+        res.sendFile(process.cwd() + '/public/index.html');
+    });
+
+    app.get('/api/users', userController.getUsers);
 
     app.route('/api/users/:username')
         .get(userController.getUserInfo)
@@ -23,7 +27,7 @@ module.exports = app => {
     app.post('/login', authController.viaLogin);
     app.post('/signup', authController.viaSignup);
 
-    app.get('/logout', (req, res) => {
+    app.get('/api/logout', (req, res) => {
         req.logout();
         res.redirect('/');
     });

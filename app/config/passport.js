@@ -15,13 +15,11 @@ module.exports = function(passport) {
     });
 
     passport.use('local-signup', new LocalStrategy((username, password, done) => {
+        if (username == 'current') return done(null, false);
+        
         Users.findOne({username}, (err, user) => {
-            if (err) {
-                return done(err);
-            }
-            if (user) {
-                return done(null, false);
-            }
+            if (err)  return done(err);
+            if (user) return done(null, false);
             else {
                 const newUser = new Users({username});
                 newUser.password = newUser.generateHash(password);
