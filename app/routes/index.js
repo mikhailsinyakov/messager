@@ -23,7 +23,7 @@ module.exports = app => {
         .patch(userController.changeUserInfo);
 
     app.route('/api/users/:username/friends')
-        .get(friendshipController.getFriendRequestsInfo)
+        .get(friendshipController.getFriendRequestsInfo);
 
     app.route('/api/users/:username/friends/:friendUsername')
         .put(friendshipController.changeFriendshipState);

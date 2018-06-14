@@ -21,6 +21,13 @@ module.exports = function () {
         res.sendFile(path);
     };
 
+    this.defineStorage = (destination, filename) => {
+        return multer.diskStorage({
+                destination: (req, file, cb) => cb(null, destination),
+                filename: (req, file, cb) => cb(null, filename)
+        });
+    };
+
     this.uploadImage = (req, res) => {
         let username = req.params.username;
         if (username == 'current') username = req.user ? req.user.username : null;
@@ -62,12 +69,5 @@ module.exports = function () {
             return res.status(415).send({status, message});
         });
     };
-
-    this.defineStorage = (destination, filename) => {
-        return multer.diskStorage({
-                destination: (req, file, cb) => cb(null, destination),
-                filename: (req, file, cb) => cb(null, filename)
-        });
-    }
 
 }

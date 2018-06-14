@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
-import RequestController from '../../app/controllers/requestController.client';
+import UserController from '../../app/controllers/userController.client';
 
-const requestController = new RequestController();
+const userController = new UserController();
 
 export default class ChangePhoto extends React.Component {
     constructor(props) {
@@ -31,11 +31,10 @@ export default class ChangePhoto extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        const action = '/api/users/current/files/avatar';
-        const formData = new FormData();
-        formData.append('avatar', this.state.file);
+        const body = new FormData();
+        body.append('avatar', this.state.file);
 
-        requestController.sendFile(action, formData)
+        userController.changePhoto(body)
             .then(data => {
                 if (data.status != 'Success') {
                     return this.setState({error: data.message});
@@ -43,7 +42,7 @@ export default class ChangePhoto extends React.Component {
                 this.props.updatePhoto();
                 this.setState({shownFileInput: false, error: null});
             })
-            .catch(err => console.error(err/*'Network error'*/));
+            .catch(err => console.error('Network error'));
     }
 
     render() {

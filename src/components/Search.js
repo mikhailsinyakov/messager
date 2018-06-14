@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import RequestController from '../../app/controllers/requestController.client';
+import UserController from '../../app/controllers/userController.client';
 
-const requestController = new RequestController();
+const userController = new UserController();
 
 export default class Search extends React.Component {
     constructor(props) {
@@ -25,8 +25,8 @@ export default class Search extends React.Component {
     }
 
     handleSearchResults() {
-        const url = `/api/users?query=${this.state.query}`;
-        requestController.sendRequest(url)
+        const query = this.state.query;
+        userController.getSearchResults(query)
             .then(data => this.setState({users: data.users}))
             .catch(err => console.error('Network error'));
     }

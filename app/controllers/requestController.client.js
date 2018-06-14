@@ -4,31 +4,27 @@ const credentials = 'same-origin';
 
 export default function () {
 
+    this.defineOptions = (method, body, contentType, mode) => {
+        const options = { method, credentials };
+
+        if (contentType == 'application/json') {
+            const headers = new Headers();
+            headers.append('Content-Type', contentType);
+            options.headers = headers;
+            options.body = JSON.stringify(body);
+        }
+        else {
+            options.body = body;
+        }
+
+        if (mode) options.mode = mode;
+
+        return options;
+    };
+
     this.sendRequest = (url, options = {credentials}) => {
         return fetch(url, options)
                     .then(response => response.json());
-    };
-
-    this.sendCredentials = (url, username, password) => {
-        const method = 'POST';
-        const body = JSON.stringify({username, password});
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-
-        const options = {method, body, headers, credentials};
-
-        return this.sendRequest(url, options);
-    };
-
-    this.sendUserInfo = (url, userInfo) => {
-        const method = 'PATCH';
-        const body = JSON.stringify(userInfo);
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-
-        const options = {method, body, headers, credentials};
-
-        return this.sendRequest(url, options);
     };
 
     this.sendFile = (url, body) => {

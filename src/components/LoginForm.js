@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
-import RequestController from '../../app/controllers/requestController.client';
+import UserController from '../../app/controllers/userController.client';
 
-const requestController = new RequestController();
+const userController = new UserController();
 
 export default class LoginForm extends React.Component {
     constructor(props) {
@@ -51,19 +51,20 @@ export default class LoginForm extends React.Component {
         const action = this.props.pathUrl;
         const username = document.querySelector('input[name="username"]').value;
         const password = this.state.password;
+        const body = { username, password };
 
         if (!username.length || !password.length) return;
 
         if (this.props.pathUrl == '/signup') {
             const errors = this.findErrors();
             if (errors) this.setState({errors});
-            else this.sendCredentials(action, username, password);
+            else this.sendCredentials(action, body);
         }
-        else this.sendCredentials(action, username, password);
+        else this.sendCredentials(action, body);
     }
 
-    sendCredentials(action, username, password) {
-        requestController.sendCredentials(action, username, password)
+    sendCredentials(action, body) {
+        userController.authenticate(action, body)
             .then(data => {
                 if (data.status == 'Success') {
                     this.props.getUsername();

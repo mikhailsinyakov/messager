@@ -4,14 +4,15 @@ import React from 'react';
 import { Switch, Route, Redirect, Link } from 'react-router-dom';
 import ChangeInfo from './ChangeInfo';
 
-import RequestController from '../../app/controllers/requestController.client';
+import UserController from '../../app/controllers/userController.client';
 
-const requestController = new RequestController();
+const userController = new UserController();
 
 export default class UserInfo extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            gotUserInfo: false,
             firstName: '',
             lastName: '',
             phoneNumber: '',
@@ -26,7 +27,7 @@ export default class UserInfo extends React.Component {
 
     getUserInfo() {
         const username = this.props.match.params.username;
-        requestController.sendRequest(`/api/users/${username}`)
+        userController.getUserInfo(username)
             .then(this.addUserInfoToState)
             .catch(err => console.error('Network error'));
     }
@@ -37,9 +38,10 @@ export default class UserInfo extends React.Component {
             aboutYourself = ''} = userInfo;
         let {phoneNumber = ''} = userInfo;
         phoneNumber = this.toPrettierFormat(phoneNumber);
+        const gotUserInfo = true;
 
         this.setState({firstName, lastName, phoneNumber, 
-                        city, birthDate, aboutYourself});
+                        city, birthDate, aboutYourself, gotUserInfo});
     }
 
     toPrettierFormat(phoneNumber) {
@@ -62,6 +64,10 @@ export default class UserInfo extends React.Component {
     }
 
     render() {
+
+        if (!this.state.gotUserInfo) {
+            return null;
+        }
 
         const { match, username } = this.props;
         const {firstName, lastName, phoneNumber,

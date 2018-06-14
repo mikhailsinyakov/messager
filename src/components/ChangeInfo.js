@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
-import RequestController from '../../app/controllers/requestController.client';
+import UserController from '../../app/controllers/userController.client';
 
-const requestController = new RequestController();
+const userController = new UserController();
 
 export default class ChangeInfo extends React.Component {
     constructor(props) {
@@ -45,23 +45,15 @@ export default class ChangeInfo extends React.Component {
     }
 
     handleSubmit(e) {
-        const action = '/api/users/current';
         const userInfo = this.state;
         userInfo.phoneNumber = this.validatePhoneNumber(userInfo.phoneNumber);
 
-        requestController.sendUserInfo(action, userInfo)
+        userController.changeUserInfo(userInfo)
             .then(data => {
                 if (data.status == 'Success') {
                     this.props.getUserInfo();
                 }
             }).catch(err => console.error('Network error'));
-    }
-
-    componentWillUpdate(nextProps) {
-        // If state is changed
-        if (JSON.stringify(this.state) != JSON.stringify(nextProps.infoState)) {
-            this.setState(nextProps.infoState);
-        }
     }
 
     render() {

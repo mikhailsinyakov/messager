@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
-import RequestController from '../../app/controllers/requestController.client';
+import UserController from '../../app/controllers/userController.client';
 
-const requestController = new RequestController();
+const userController = new UserController();
 
 export default class ChangePassword extends React.Component {
     constructor(props) {
@@ -40,9 +40,8 @@ export default class ChangePassword extends React.Component {
             this.setState({error});
             return;
         }
-        const action = '/api/users/current';
-        const passwordsObj = { currentPassword, newPassword };
-        requestController.sendUserInfo(action, passwordsObj)
+        const body = { currentPassword, newPassword };
+        userController.changeUserInfo(body)
             .then(data => {
                 if (data.status == 'Success') {
                     this.setState({currentPassword: '', newPassword: ''});

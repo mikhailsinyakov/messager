@@ -4,11 +4,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter} from 'react-router-dom';
 
-import RequestController from '../app/controllers/requestController.client';
+import UserController from '../app/controllers/userController.client';
 import Header from './components/Header';
 import Main from './components/Main';
 
-const requestController = new RequestController();
+const userController = new UserController();
 const app = document.querySelector('#app');
 
 class App extends React.Component {
@@ -31,7 +31,7 @@ class App extends React.Component {
     }
 
     getUsername() {
-        requestController.sendRequest('/api/users/current?onlyUsername=true')
+        userController.getUsername()
             .then(this.addUserToState)
             .catch(err => console.error('Network error'));
     }
