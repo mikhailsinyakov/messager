@@ -34,10 +34,10 @@ module.exports = function() {
         if (!username) return res.status(404).send({status: 'Not found'});
 
         Users.findOne({username}, {_id: false, password: false, __v: false})
-                .then(user => {
-                    if (user) return res.status(200).send({status: 'Success', user});
-                    res.sendStatus(404);
-                }).catch(err => res.status(500).send({status: 'Server error'}));
+        .then(user => {
+                if (user) return res.status(200).send({status: 'Success', user});
+                res.sendStatus(404);
+            }).catch(err => res.status(500).send({status: 'Server error'}));
     };
 
     this.changeUserInfo = (req, res) => {

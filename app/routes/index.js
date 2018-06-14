@@ -3,10 +3,12 @@
 const UserController = require('../controllers/userController.server');
 const AuthController = require('../controllers/authController.server');
 const ImageController = require('../controllers/imageController.server');
+const FriendshipController = require('../controllers/friendshipController.server');
 
 const userController = new UserController();
 const authController = new AuthController();
 const imageController = new ImageController();
+const friendshipController = new FriendshipController();
 
 module.exports = app => {
 
@@ -19,6 +21,12 @@ module.exports = app => {
     app.route('/api/users/:username')
         .get(userController.getUserInfo)
         .patch(userController.changeUserInfo);
+
+    app.route('/api/users/:username/friends')
+        .get(friendshipController.getFriendRequestsInfo)
+
+    app.route('/api/users/:username/friends/:friendUsername')
+        .put(friendshipController.changeFriendshipState);
 
     app.route('/api/users/:username/files/:name')
         .get(imageController.getImage)
