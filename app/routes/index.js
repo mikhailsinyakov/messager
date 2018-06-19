@@ -27,7 +27,7 @@ module.exports = app => {
 
     app.route('/api/users/:username/friends/:friendUsername')
         .put(friendshipController.changeFriendshipState);
-
+    
     app.route('/api/users/:username/files/:name')
         .get(imageController.getImage)
         .put(imageController.uploadImage);

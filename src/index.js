@@ -5,10 +5,14 @@ import ReactDOM from 'react-dom';
 import {BrowserRouter} from 'react-router-dom';
 
 import UserController from '../app/controllers/userController.client';
+import FriendshipController from '../app/controllers/friendshipController.client';
+
 import Header from './components/Header';
 import Main from './components/Main';
 
 const userController = new UserController();
+const friendshipController = new FriendshipController();
+
 const app = document.querySelector('#app');
 
 class App extends React.Component {
@@ -39,6 +43,7 @@ class App extends React.Component {
     componentDidMount() {
         this.getUsername();
     }
+
 
     componentWillUpdate() {
         if (!this.state.updated) {

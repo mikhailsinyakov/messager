@@ -7,10 +7,13 @@ export default function () {
     this.defineOptions = (method, body, contentType, mode) => {
         const options = { method, credentials };
 
-        if (contentType == 'application/json') {
+        if (contentType) {
             const headers = new Headers();
             headers.append('Content-Type', contentType);
             options.headers = headers;
+        }
+        
+        if (contentType == 'application/json') {
             options.body = JSON.stringify(body);
         }
         else {
@@ -26,15 +29,5 @@ export default function () {
         return fetch(url, options)
                     .then(response => response.json());
     };
-
-    this.sendFile = (url, body) => {
-        const method = 'PUT';
-        const mode = 'same-origin';
-
-        const options = {method, body, credentials, mode};
-
-        return this.sendRequest(url, options);
-    };
-
 
 }
