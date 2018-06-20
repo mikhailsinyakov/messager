@@ -6,7 +6,7 @@ import UserInfo from './UserInfo';
 import ChangeInfo from './ChangeInfo';
 import FriendState from './FriendState'; 
 
-import UserController from '../../app/controllers/userController.client';
+import UserController from '@app/controllers/userController.client';
 
 const userController = new UserController();
 

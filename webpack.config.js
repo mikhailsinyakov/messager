@@ -12,5 +12,11 @@ module.exports = {
             }
         }]
     },
+    resolve: {
+        alias: {
+            '@app': __dirname + '/app',
+            '@src': __dirname + '/src'
+        }
+    },
     mode: 'development'
 };

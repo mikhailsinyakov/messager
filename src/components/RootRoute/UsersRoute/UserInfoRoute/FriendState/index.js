@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import ChangeFriendState from './ChangeFriendStateBtn';
+import ChangeFriendState from '@src/components/common/ChangeFriendStateBtn';
 
 export default function FriendState (props) {
     const { username, friendRequestsInfo } = props;

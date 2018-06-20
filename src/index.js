@@ -4,8 +4,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter} from 'react-router-dom';
 
-import UserController from '../app/controllers/userController.client';
-import FriendshipController from '../app/controllers/friendshipController.client';
+import UserController from '@app/controllers/userController.client';
+import FriendshipController from '@app/controllers/friendshipController.client';
 
 import Header from './components/Header';
 import RootRoute from './components/RootRoute';

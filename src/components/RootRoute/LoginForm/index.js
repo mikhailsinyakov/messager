@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import UserController from '../../app/controllers/userController.client';
+import UserController from '@app/controllers/userController.client';
 
 const userController = new UserController();
 

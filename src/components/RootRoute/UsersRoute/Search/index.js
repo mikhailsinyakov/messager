@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import UserController from '../../app/controllers/userController.client';
+import UserController from '@app/controllers/userController.client';
 
 const userController = new UserController();
 

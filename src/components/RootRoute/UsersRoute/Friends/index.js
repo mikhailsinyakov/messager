@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ChangeFriendStateBtn from './ChangeFriendStateBtn'; 
+import ChangeFriendStateBtn from '@src/components/common/ChangeFriendStateBtn'; 
 
-import UserController from '../../app/controllers/userController.client';
+import UserController from '@app/controllers/userController.client';
 
 const userController = new UserController();
 
