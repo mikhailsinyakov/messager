@@ -52,7 +52,7 @@ module.exports = function() {
                     usersWaitingForAnswer
                 };
 
-                res.status(200).send(friendRequestsInfo);
+                res.status(200).send({status: 'Success', friendRequestsInfo});
             }).catch(err => res.status(500).send({status: 'Server error'}));
     };
 

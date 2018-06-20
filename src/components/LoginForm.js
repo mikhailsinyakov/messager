@@ -99,7 +99,7 @@ export default class LoginForm extends React.Component {
         }
 
         return (
-            <div>
+            <React.Fragment>
                 <form id="loggingForm">
                     <input type="text" name="username" 
                             onChange={e => this.handleInput(e.target)}
@@ -119,7 +119,7 @@ export default class LoginForm extends React.Component {
                     </button>
                 </form>
                 {message}
-            </div>
+            </React.Fragment>
         );
     }
     

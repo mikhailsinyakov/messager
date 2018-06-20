@@ -5,13 +5,14 @@ import {Switch, Route, Redirect} from 'react-router-dom';
 
 import Settings from './Settings';
 import Search from './Search';
-import UserInfo from './UserInfo';
+import UserInfoRoute from './UserInfoRoute';
+import Friends from './Friends';
 
-export default function Users(props) {
+export default function UsersRoute(props) {
     const userInfoPath = `/users/${props.username}/info`;
 
     return (
-        <div>
+        <React.Fragment>
             <Switch>
                 <Route
                     exact path={props.match.url}
@@ -26,13 +27,26 @@ export default function Users(props) {
                 <Route 
                     path={props.match.url + '/:username/info'}
                     render={({match}) => (
-                        <UserInfo match={match} username={props.username}/>
+                        <UserInfoRoute
+                            match={match} 
+                            username={props.username}
+                            friendRequestsInfo={props.friendRequestsInfo}
+                        />
+                    )}
+                />
+                <Route 
+                    path={props.match.url + '/:username/friends'}
+                    render={() => (
+                        <Friends
+                            username={props.username}
+                            friendRequestsInfo={props.friendRequestsInfo}
+                        />
                     )}
                 />
                 <Route 
                     render={() => <Redirect to={userInfoPath}/> }
                 />
             </Switch>
-        </div>
+        </React.Fragment>
     );
 }

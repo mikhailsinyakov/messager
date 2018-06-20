@@ -4,9 +4,9 @@ import React from 'react';
 import {Switch, Route, Redirect} from 'react-router-dom';
 
 import LoginForm from './LoginForm';
-import Users from './Users';
+import UsersRoute from './UsersRoute';
 
-export default function Main (props) {
+export default function RootRoute (props) {
 
     const isLoggedIn = !!props.username;
 
@@ -29,7 +29,10 @@ export default function Main (props) {
                     path='/users' 
                     render={({match}) => (
                         isLoggedIn 
-                            ? <Users match={match} username={props.username} />
+                            ? <UsersRoute
+                                match={match} username={props.username} 
+                                friendRequestsInfo={props.friendRequestsInfo} 
+                                />
                             : <Redirect to='/login'/>
                     )} 
                 />

@@ -8,7 +8,7 @@ import UserController from '../app/controllers/userController.client';
 import FriendshipController from '../app/controllers/friendshipController.client';
 
 import Header from './components/Header';
-import Main from './components/Main';
+import RootRoute from './components/RootRoute';
 
 const userController = new UserController();
 const friendshipController = new FriendshipController();
@@ -20,18 +20,19 @@ class App extends React.Component {
         super(props);
         this.state = {
             username: null,
+            friendRequestsInfo: {
+                friendsList: [],
+                followersList: [],
+                usersIFollow: [],
+                usersWaitingForAnswer: []
+            },
             updated: false
         };
 
-        this.addUserToState = this.addUserToState.bind(this);
         this.getUsername = this.getUsername.bind(this);
-    }
-
-    addUserToState(data) {
-        if (data.status == 'Success') {
-            const username = data.username ? data.username : null;
-            this.setState({username});
-        }
+        this.addUserToState = this.addUserToState.bind(this);
+        this.getFriendRequestsInfo = this.getFriendRequestsInfo.bind(this);
+        this.updateFriendshipRequestsInfo = this.updateFriendshipRequestsInfo.bind(this);
     }
 
     getUsername() {
@@ -40,14 +41,34 @@ class App extends React.Component {
             .catch(err => console.error('Network error'));
     }
 
+    addUserToState(data) {
+        if (data.status == 'Success') {
+            const username = data.username ? data.username : null;
+            this.setState({username, updated: true});
+        }
+    }
+
+    getFriendRequestsInfo() {
+        const username = this.state.username;
+        friendshipController.getFriendRequestsInfo(username)
+            .then(this.updateFriendshipRequestsInfo)
+            .catch(err => console.error('Network error'));
+    }
+
+    updateFriendshipRequestsInfo(data) {
+        if (data.status == 'Success') {
+            const { friendRequestsInfo } = data;
+            this.setState({friendRequestsInfo});
+        }
+    }
+
     componentDidMount() {
         this.getUsername();
     }
 
-
-    componentWillUpdate() {
-        if (!this.state.updated) {
-            this.setState({updated: true});
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.updated != this.state.updated) {
+            this.getFriendRequestsInfo();
         }
     }
 
@@ -57,10 +78,17 @@ class App extends React.Component {
         }
 
         return (
-            <div>
-                <Header username={this.state.username} />
-                <Main username={this.state.username} getUsername={this.getUsername}/>
-            </div>
+            <React.Fragment>
+                <Header 
+                    username={this.state.username}
+                    friendRequestsInfo={this.state.friendRequestsInfo}
+                />
+                <RootRoute
+                    username={this.state.username}
+                    getUsername={this.getUsername}
+                    friendRequestsInfo={this.state.friendRequestsInfo}
+                />
+            </React.Fragment>
         );
     }
     
