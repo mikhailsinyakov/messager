@@ -3,13 +3,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter} from 'react-router-dom';
-
-import UserController from '@app/controllers/userController.client';
-import FriendshipController from '@app/controllers/friendshipController.client';
+import WebSocketConnection from '@app/websocket/client';
 
 import Header from './components/Header';
 import RootRoute from './components/RootRoute';
 
+import UserController from '@app/controllers/userController.client';
+import FriendshipController from '@app/controllers/friendshipController.client';
+
+const websocket = new WebSocketConnection();
 const userController = new UserController();
 const friendshipController = new FriendshipController();
 
@@ -30,22 +32,24 @@ class App extends React.Component {
         };
 
         this.getUsername = this.getUsername.bind(this);
-        this.addUserToState = this.addUserToState.bind(this);
         this.getFriendRequestsInfo = this.getFriendRequestsInfo.bind(this);
         this.updateFriendshipRequestsInfo = this.updateFriendshipRequestsInfo.bind(this);
     }
 
     getUsername() {
         userController.getUsername()
-            .then(this.addUserToState)
+            .then(data => {
+                const { status, username } = data;
+                if (status == 'Success') {
+                    this.setState({username, updated: true});
+                    if (username) {
+                        websocket.createConnection();
+                        websocket.sendUsername(username);
+                    }
+                }
+                
+            })
             .catch(err => console.error('Network error'));
-    }
-
-    addUserToState(data) {
-        if (data.status == 'Success') {
-            const username = data.username ? data.username : null;
-            this.setState({username, updated: true});
-        }
     }
 
     getFriendRequestsInfo() {

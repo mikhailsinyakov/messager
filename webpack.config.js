@@ -1,3 +1,7 @@
+'use strict';
+const Dotenv = require('dotenv-webpack');
+
+
 module.exports = {
     output: {
         path: __dirname + '/public',
@@ -18,5 +22,8 @@ module.exports = {
             '@src': __dirname + '/src'
         }
     },
+    plugins: [
+        new Dotenv()
+    ],
     mode: 'development'
 };

@@ -9,15 +9,15 @@ require('dotenv').config();
 const routes = require('./app/routes');
 const passportConfig = require('./app/config/passport');
 const appConfig = require('./app/config/app');
+const handleWebSocketConnection = require('./app/websocket/server');
 
-
+const port = process.env.PORT;
 const app = express();
 const server = http.createServer(app);
-const port = process.env.PORT;
+handleWebSocketConnection(server);
 
 mongoose.connect(process.env.ATLAS_URI)
         .catch(err => console.error(err));
-
 
 appConfig(app, passport);
 passportConfig(passport);
