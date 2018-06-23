@@ -35,7 +35,9 @@ module.exports = function handleWebSocketConnection(server) {
                     if (username == username1 || username == username2) {
                         const outgoingBody = {event: 'friendship status changed'};
                         const outgoingMessage = JSON.stringify(outgoingBody);
-                        activeUsers[username].send(outgoingMessage);
+                        activeUsers[username].forEach(connection => {
+                            connection.send(outgoingMessage);
+                        });
                     }
                 }
             }

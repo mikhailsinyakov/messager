@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ChangeFriendStateBtn from '@src/components/common/ChangeFriendStateBtn'; 
+import ChangeFriendState from '@src/components/common/ChangeFriendStateBtn'; 
 
 import UserController from '@app/controllers/userController.client';
 
@@ -58,7 +58,8 @@ export default class Friends extends React.Component {
     }
 
     render() {
-        const { username, friendRequestsInfo } = this.props;
+        const { username, friendRequestsInfo, 
+            websocket } = this.props;
         const { userInfo } = this.state;
 
         const { 
@@ -74,43 +75,55 @@ export default class Friends extends React.Component {
             );
         }
 
-        const createFriendElem = (username, isFriend) => {
-            (<div key={username}>
-                <Link to={`/users/${username}/info`}>
-                    <img src={`/public/photos/${username}-avatar.jpg`}
+        function ChangeFriendStateProto(props) {
+            const { description, newFriendState, friendUsername } = props;
+            return (
+                <ChangeFriendState 
+                    description={description}
+                    newFriendState={newFriendState}
+                    friendUsername={friendUsername}
+                    username={username}
+                />
+            );
+        }
+
+        const createFriendElem = (friendUsername, isFriend) => (
+            <div key={friendUsername}>
+                <Link to={`/users/${friendUsername}/info`}>
+                    <img src={`/public/photos/${friendUsername}-avatar.jpg`}
                         height={50}
                         onError={this.handleImgError} />
                 </Link>
-                <Link to={`/users/${username}/info`}>
-                    {userInfo[username] 
-                        ? <span> {userInfo[username]}</span> 
-                        : <span>{username}</span>}
+                <Link to={`/users/${friendUsername}/info`}>
+                    {userInfo[friendUsername] 
+                        ? <span> {userInfo[friendUsername]}</span> 
+                        : <span>{friendUsername}</span>}
                 </Link>
                 {isFriend 
-                    ?   <ChangeFriendStateBtn 
-                            description="Убрать из друзей"
-                            newFriendState="rejected"
+                    ?   <ChangeFriendStateProto 
+                            description="Убрать из друзей" newFriendState="rejected"
+                            friendUsername={friendUsername}
                         />
                     :   <React.Fragment>
-                            <ChangeFriendStateBtn 
-                                description="Принять заявку"
-                                newFriendState="wanted"
+                            <ChangeFriendStateProto 
+                                description="Принять заявку" newFriendState="wanted"
+                                friendUsername={friendUsername} 
                             />
-                            <ChangeFriendStateBtn 
-                                description="Отклонить"
-                                newFriendState="rejected"
+                            <ChangeFriendStateProto 
+                                description="Отклонить" newFriendState="rejected"
+                                friendUsername={friendUsername}
                             />
                         </React.Fragment>
                 }
-            </div>);
-        }
+            </div>
+        );
 
-        const possibleFriendsElems = possibleFriends.map(username => {
-            return createFriendElem(username, false);
+        const possibleFriendsElems = possibleFriends.map(friendUsername => {
+            return createFriendElem(friendUsername, false);
         });
 
-        const friendsElems = friends.map(username => {
-            return createFriendElem(username, true);
+        const friendsElems = friends.map(friendUsername => {
+            return createFriendElem(friendUsername, true);
         });
         
         return (

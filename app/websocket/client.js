@@ -1,15 +1,16 @@
 'use strict';
 
-export default function websocket() {
+export default (function websocket() {
 
     let ws;
 
     function createConnection() {
-        const host = process.env.APP_HOST;
-        const port = process.env.PORT;
-        const uri = `ws://${host}:${port}`;
-        ws = new WebSocket(uri);
-        console.log(ws)
+        if (!ws) {
+            const host = process.env.APP_HOST;
+            const port = process.env.PORT;
+            const uri = `ws://${host}:${port}`;
+            ws = new WebSocket(uri);
+        }
     }
 
     function ready (fn) {
@@ -38,15 +39,28 @@ export default function websocket() {
         ready(() => sendJSON({event: 'connection is open', username}));
     }
 
-    return {
-        createConnection,
-        sendUsername
+    function sendUsernamesWithChangedStatus (username1, username2) {
+        ready(() => sendJSON({event: 'friendship status changed', username1, username2}));
     }
 
-    /*
+    function onMessage (event, fn) {
+        if (!ws) createConnection();
+        ws.addEventListener('message', message => {
+            const { data } = message;
+            const obj = JSON.parse(data);
+            if (obj.event == event) fn();
+        });
+    }
+    
+    function friendshipStatusChanged (fn) {
+        onMessage('friendship status changed', fn)
+    }
 
-    ws.addEventListener('message', event => {
-        console.log(event.data);
-    });*/
+    return {
+        createConnection,
+        sendUsername,
+        sendUsernamesWithChangedStatus,
+        friendshipStatusChanged
+    }
 
-}
+})();

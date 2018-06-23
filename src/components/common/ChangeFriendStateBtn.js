@@ -1,6 +1,10 @@
 'use strict';
 
 import React from 'react';
+import FriendshipController from '@app/controllers/friendshipController.client';
+import websocket from '@app/websocket/client';
+
+const friendshipController = new FriendshipController();
 
 export default class changeFriendStateBtn extends React.Component {
     
@@ -10,7 +14,14 @@ export default class changeFriendStateBtn extends React.Component {
     }
 
     handleClick() {
-        const { newFriendState } = this.props;
+        const { newFriendState, username, friendUsername, } = this.props;
+
+        friendshipController.changeFriendshipState(username, friendUsername, newFriendState)
+            .then(data => {
+                if (data.status == 'Success') {
+                    websocket.sendUsernamesWithChangedStatus(username, friendUsername);
+                }
+            }).catch(err => console.error('Network error'));
     }
 
     render() {

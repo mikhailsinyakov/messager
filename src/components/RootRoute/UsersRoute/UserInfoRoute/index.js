@@ -71,7 +71,7 @@ export default class UserInfoRoute extends React.Component {
             return null;
         }
 
-        const { match, username, friendRequestsInfo } = this.props;
+        const { match, username, friendRequestsInfo, websocket } = this.props;
         const {firstName, lastName, phoneNumber,
             city, birthDate, aboutYourself} = this.state;
 
@@ -96,6 +96,7 @@ export default class UserInfoRoute extends React.Component {
                                         ? <Link to={match.url + '/edit'}>Изменить</Link>
                                         : <FriendState 
                                             username={username}
+                                            friendUsername={match.params.username}
                                             friendRequestsInfo={friendRequestsInfo}
                                         />
                                 }

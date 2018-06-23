@@ -3,7 +3,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {BrowserRouter} from 'react-router-dom';
-import WebSocketConnection from '@app/websocket/client';
+import websocket from '@app/websocket/client';
 
 import Header from './components/Header';
 import RootRoute from './components/RootRoute';
@@ -11,7 +11,6 @@ import RootRoute from './components/RootRoute';
 import UserController from '@app/controllers/userController.client';
 import FriendshipController from '@app/controllers/friendshipController.client';
 
-const websocket = new WebSocketConnection();
 const userController = new UserController();
 const friendshipController = new FriendshipController();
 
@@ -71,8 +70,9 @@ class App extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevState.updated != this.state.updated) {
+        if (prevState.username != this.state.username) {
             this.getFriendRequestsInfo();
+            websocket.friendshipStatusChanged(this.getFriendRequestsInfo);
         }
     }
 
@@ -80,7 +80,6 @@ class App extends React.Component {
         if (!this.state.updated) {
             return null;
         }
-
         return (
             <React.Fragment>
                 <Header 
