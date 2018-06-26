@@ -14,6 +14,7 @@ export default class LoginForm extends React.Component {
             confirmPassword: '',
             errors: []
         };
+        this.abortControllers = [];
 
         this.handleInput = this.handleInput.bind(this);
         this.findErrors = this.findErrors.bind(this);
@@ -64,6 +65,9 @@ export default class LoginForm extends React.Component {
     }
 
     sendCredentials(action, body) {
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
         userController.authenticate(action, body)
             .then(data => {
                 if (data.status == 'Success') {
@@ -73,6 +77,10 @@ export default class LoginForm extends React.Component {
                 const errors = [data.message];
                 this.setState({errors});
             }).catch(err => console.error('Network error'));
+    }
+
+    componentWillUnmount() {
+        this.abortControllers.forEach(controller => controller.abort());
     }
 
     render() {

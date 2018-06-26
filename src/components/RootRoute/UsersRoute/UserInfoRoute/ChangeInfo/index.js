@@ -11,6 +11,7 @@ export default class ChangeInfo extends React.Component {
 
         this.state = this.props.infoState;
 
+        this.abortControllers = [];
         this.checkValueThroughRegExp = this.checkValueThroughRegExp.bind(this);
         this.validatePhoneNumber = this.validatePhoneNumber.bind(this);
         this.handleInput = this.handleInput.bind(this);
@@ -29,6 +30,7 @@ export default class ChangeInfo extends React.Component {
     }
 
     validatePhoneNumber(phoneNumber) {
+        if (!phoneNumber) return phoneNumber;
         phoneNumber = phoneNumber.replace(/\D/g, '');
         if (phoneNumber[0] == '7' || phoneNumber[0] == '8') {
             phoneNumber = phoneNumber.slice(1);
@@ -48,12 +50,19 @@ export default class ChangeInfo extends React.Component {
         const userInfo = this.state;
         userInfo.phoneNumber = this.validatePhoneNumber(userInfo.phoneNumber);
 
-        userController.changeUserInfo(userInfo)
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
+        userController.changeUserInfo(userInfo, signal)
             .then(data => {
                 if (data.status == 'Success') {
                     this.props.getUserInfo();
                 }
             }).catch(err => console.error('Network error'));
+    }
+
+    componentWillUnmount() {
+        this.abortControllers.forEach(controller => controller.abort());
     }
 
     render() {

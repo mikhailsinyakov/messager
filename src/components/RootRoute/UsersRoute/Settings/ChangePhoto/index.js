@@ -13,7 +13,8 @@ export default class ChangePhoto extends React.Component {
             file: null,
             error: null
         };
-
+        
+        this.abortControllers = [];
         this.toggleFileInput = this.toggleFileInput.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -34,7 +35,10 @@ export default class ChangePhoto extends React.Component {
         const body = new FormData();
         body.append('avatar', this.state.file);
 
-        userController.changePhoto(body)
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
+        userController.changePhoto(body, signal)
             .then(data => {
                 if (data.status != 'Success') {
                     return this.setState({error: data.message});
@@ -43,6 +47,10 @@ export default class ChangePhoto extends React.Component {
                 this.setState({shownFileInput: false, error: null});
             })
             .catch(err => console.error('Network error'));
+    }
+
+    componentWillUnmount() {
+        this.abortControllers.forEach(controller => controller.abort());
     }
 
     render() {

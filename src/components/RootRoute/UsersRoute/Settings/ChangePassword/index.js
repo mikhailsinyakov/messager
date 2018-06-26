@@ -15,6 +15,7 @@ export default class ChangePassword extends React.Component {
             success: null
         }
 
+        this.abortControllers = [];
         this.handleInput = this.handleInput.bind(this);
         this.showSuccessMsg = this.showSuccessMsg.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -41,7 +42,10 @@ export default class ChangePassword extends React.Component {
             return;
         }
         const body = { currentPassword, newPassword };
-        userController.changeUserInfo(body)
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
+        userController.changeUserInfo(body, signal)
             .then(data => {
                 if (data.status == 'Success') {
                     this.setState({currentPassword: '', newPassword: ''});
@@ -52,6 +56,10 @@ export default class ChangePassword extends React.Component {
                     this.setState({currentPassword: '', newPassword: '', error});
                 }
             }).catch(err => console.error('Network error'));
+    }
+
+    componentWillUnmount() {
+        this.abortControllers.forEach(controller => controller.abort());
     }
 
     render() {

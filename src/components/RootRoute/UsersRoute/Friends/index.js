@@ -17,6 +17,7 @@ export default class Friends extends React.Component {
             userInfo: {}
         }
 
+        this.abortControllers = [];
         this.handleImgError = this.handleImgError.bind(this);
         this.updateUserInfo = this.updateUserInfo.bind(this);
     }
@@ -35,11 +36,17 @@ export default class Friends extends React.Component {
         const getUserInfoPromises = [];
 
         friendsList.forEach(username => {
-            getUserInfoPromises.push(userController.getUserInfo(username));
+            const controller = new AbortController();
+            const { signal } = controller;
+            this.abortControllers.push(controller);
+            getUserInfoPromises.push(userController.getUserInfo(username, signal));
         });
 
         usersWaitingForAnswer.forEach(username => {
-            getUserInfoPromises.push(userController.getUserInfo(username));
+            const controller = new AbortController();
+            const { signal } = controller;
+            this.abortControllers.push(controller);
+            getUserInfoPromises.push(userController.getUserInfo(username, signal));
         });
 
         Promise.all(getUserInfoPromises)
@@ -55,6 +62,10 @@ export default class Friends extends React.Component {
 
                 this.updateUserInfo(userInfoObj);
             }).catch(err => console.error('Network error'));
+    }
+    
+    componentWillUnmount() {
+        this.abortControllers.forEach(controller => controller.abort());
     }
 
     render() {

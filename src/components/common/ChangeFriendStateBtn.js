@@ -10,18 +10,27 @@ export default class changeFriendStateBtn extends React.Component {
     
     constructor(props) {
         super(props);
+        this.abortControllers = [];
         this.handleClick = this.handleClick.bind(this);
+
     }
 
     handleClick() {
         const { newFriendState, username, friendUsername, } = this.props;
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
 
-        friendshipController.changeFriendshipState(username, friendUsername, newFriendState)
+        friendshipController.changeFriendshipState(username, friendUsername, newFriendState, signal)
             .then(data => {
                 if (data.status == 'Success') {
                     websocket.sendUsernamesWithChangedStatus(username, friendUsername);
                 }
             }).catch(err => console.error('Network error'));
+    }
+    
+    componentWillUnmount() {
+        this.abortControllers.forEach(controller => controller.abort());
     }
 
     render() {

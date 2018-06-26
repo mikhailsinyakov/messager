@@ -1,9 +1,8 @@
 'use strict';
 
-const credentials = 'same-origin';
-
 export default function () {
-
+    const credentials = 'same-origin';
+    
     this.defineOptions = (method, body, contentType, mode) => {
         const options = { method, credentials };
 
@@ -25,7 +24,8 @@ export default function () {
         return options;
     };
 
-    this.sendRequest = (url, options = {credentials}) => {
+    this.sendRequest = (url, options = { credentials }, signal) => {
+        options.signal = signal;
         return fetch(url, options)
                     .then(response => response.json());
     };

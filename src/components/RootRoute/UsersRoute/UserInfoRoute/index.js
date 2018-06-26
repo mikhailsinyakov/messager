@@ -22,6 +22,8 @@ export default class UserInfoRoute extends React.Component {
             birthDate: '',
             aboutYourself: ''
         };
+        
+        this.abortControllers = [];
         this.getUserInfo = this.getUserInfo.bind(this);
         this.addUserInfoToState = this.addUserInfoToState.bind(this);
         this.toPrettierFormat = this.toPrettierFormat.bind(this);
@@ -29,7 +31,10 @@ export default class UserInfoRoute extends React.Component {
 
     getUserInfo() {
         const username = this.props.match.params.username;
-        userController.getUserInfo(username)
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
+        userController.getUserInfo(username, signal)
             .then(this.addUserInfoToState)
             .catch(err => console.error('Network error'));
     }
@@ -63,6 +68,10 @@ export default class UserInfoRoute extends React.Component {
 
     componentDidMount() {
         this.getUserInfo();
+    }
+    
+    componentWillUnmount() {
+        this.abortControllers.forEach(controller => controller.abort());
     }
 
     render() {

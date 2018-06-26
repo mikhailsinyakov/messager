@@ -30,13 +30,17 @@ class App extends React.Component {
             updated: false
         };
 
+        this.abortControllers = [];
         this.getUsername = this.getUsername.bind(this);
         this.getFriendRequestsInfo = this.getFriendRequestsInfo.bind(this);
         this.updateFriendshipRequestsInfo = this.updateFriendshipRequestsInfo.bind(this);
     }
 
     getUsername() {
-        userController.getUsername()
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
+        userController.getUsername(signal)
             .then(data => {
                 const { status, username } = data;
                 if (status == 'Success') {
@@ -48,14 +52,27 @@ class App extends React.Component {
                 }
                 
             })
-            .catch(err => console.error('Network error'));
+            .catch(err => {
+                if (err.name == 'AbortError') {
+                    return;
+                }
+                console.error('Network error');
+            });
     }
 
     getFriendRequestsInfo() {
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
         const username = this.state.username;
-        friendshipController.getFriendRequestsInfo(username)
+        friendshipController.getFriendRequestsInfo(username, signal)
             .then(this.updateFriendshipRequestsInfo)
-            .catch(err => console.error('Network error'));
+            .catch(err => {
+                if (err.name == 'AbortError') {
+                    return;
+                }
+                console.error('Network error');
+            });
     }
 
     updateFriendshipRequestsInfo(data) {
@@ -67,6 +84,10 @@ class App extends React.Component {
 
     componentDidMount() {
         this.getUsername();
+    }
+
+    componentWillUnmount() {
+        this.abortControllers.forEach(controller => controller.abort());
     }
 
     componentDidUpdate(prevProps, prevState) {

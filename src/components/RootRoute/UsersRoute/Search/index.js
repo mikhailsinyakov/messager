@@ -14,6 +14,7 @@ export default class Search extends React.Component {
             users: []
         };
 
+        this.abortControllers = [];
         this.handleInput = this.handleInput.bind(this);
         this.handleSearchResults = this.handleSearchResults.bind(this);
         this.handleImgError = this.handleImgError.bind(this);
@@ -26,7 +27,10 @@ export default class Search extends React.Component {
 
     handleSearchResults() {
         const query = this.state.query;
-        userController.getSearchResults(query)
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
+        userController.getSearchResults(query, signal)
             .then(data => this.setState({users: data.users}))
             .catch(err => console.error('Network error'));
     }
@@ -37,6 +41,10 @@ export default class Search extends React.Component {
 
     componentDidMount() {
         this.handleSearchResults();
+    }
+    
+    componentWillUnmount() {
+        this.abortControllers.forEach(controller => controller.abort());
     }
 
     componentDidUpdate(prevProps, prevState) {

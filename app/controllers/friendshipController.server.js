@@ -18,7 +18,6 @@ module.exports = function() {
                     return (friendship.user1.username == targetUsername ||
                             friendship.user2.username == targetUsername);
                 });
-                console.log(friendships, req.params)
 
                 matchedFriendships.forEach(friendship => {
                     const targetUser = friendship.user1.username == targetUsername
