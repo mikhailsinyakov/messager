@@ -88,6 +88,7 @@ class App extends React.Component {
 
     componentWillUnmount() {
         this.abortControllers.forEach(controller => controller.abort());
+        websocket.close();
     }
 
     componentDidUpdate(prevProps, prevState) {

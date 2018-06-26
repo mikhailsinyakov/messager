@@ -56,11 +56,16 @@ export default (function websocket() {
         onMessage('friendship status changed', fn)
     }
 
+    function close() {
+        ws.close();
+    }
+
     return {
         createConnection,
         sendUsername,
         sendUsernamesWithChangedStatus,
-        friendshipStatusChanged
+        friendshipStatusChanged,
+        close
     }
 
 })();
