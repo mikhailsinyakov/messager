@@ -43,6 +43,10 @@ export default (function websocket() {
         ready(() => sendJSON({event: 'friendship status changed', username1, username2}));
     }
 
+    function sendMessage(username1, username2, text) {
+        ready(() => sendJSON({event: 'new message', username1, username2, text}));
+    }
+
     function onMessage (event, fn) {
         if (!ws) createConnection();
         ws.addEventListener('message', message => {
@@ -65,7 +69,8 @@ export default (function websocket() {
         sendUsername,
         sendUsernamesWithChangedStatus,
         friendshipStatusChanged,
-        close
+        close,
+        sendMessage
     }
 
 })();
