@@ -20,6 +20,7 @@ export default class Dialog extends React.Component {
         this.updateMessages = this.updateMessages.bind(this);
         this.handleInput = this.handleInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.addMessage = this.addMessage.bind(this);
         this.abortControllers = [];
     }
 
@@ -38,6 +39,12 @@ export default class Dialog extends React.Component {
         this.setState({newMessage: ''});
     }
 
+    addMessage(message) {
+        const { messages } = this.state;
+        messages.push(message);
+        this.setState({messages});
+    }
+
     componentDidMount() {
         const controller = new AbortController();
         const signal = controller.signal;
@@ -51,6 +58,8 @@ export default class Dialog extends React.Component {
                 }
             })
             .catch(err => console.error('Network error'));
+
+        websocket.gotNewMessage(obj => this.addMessage(obj.message));
     }
 
     componentWillUnmount() {
@@ -58,7 +67,7 @@ export default class Dialog extends React.Component {
     }
 
     render() {
-        const messages = this.state.messages.map(message => {
+        const messages = this.state.messages.map((message, i) => {
             const { username } = this.props;
             const { sender, text, read } = message;
             let { date } = message;
@@ -70,7 +79,7 @@ export default class Dialog extends React.Component {
             });
 
             return (
-                <p className={messageClass} key={date}>
+                <p className={messageClass} key={i}>
                     {date}
                     {text}
                 </p>

@@ -52,12 +52,16 @@ export default (function websocket() {
         ws.addEventListener('message', message => {
             const { data } = message;
             const obj = JSON.parse(data);
-            if (obj.event == event) fn();
+            if (obj.event == event) fn(obj);
         });
     }
     
     function friendshipStatusChanged (fn) {
-        onMessage('friendship status changed', fn)
+        onMessage('friendship status changed', fn);
+    }
+
+    function gotNewMessage (fn) {
+        onMessage('new message', fn);
     }
 
     function close() {
@@ -70,7 +74,8 @@ export default (function websocket() {
         sendUsernamesWithChangedStatus,
         friendshipStatusChanged,
         close,
-        sendMessage
+        sendMessage,
+        gotNewMessage
     }
 
 })();

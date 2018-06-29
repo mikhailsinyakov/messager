@@ -1,6 +1,9 @@
 'use strict';
 
 const WebSocket = require('ws');
+const DialogController = require('../controllers/dialogController.server');
+
+const dialogController = new DialogController();
 
 module.exports = function handleWebSocketConnection(server) {
     
@@ -40,6 +43,22 @@ module.exports = function handleWebSocketConnection(server) {
                         });
                     }
                 }
+            }
+            else if (event == 'new message') {
+                const { username1, username2, text } = incomingBody;
+                dialogController.addMessage(username1, username2, text)
+                    .then(message => {
+                        for (const username in activeUsers) {
+                            if (username == username1 || username == username2) {
+                                const outgoingBody = {event: 'new message', message};
+                                const outgoingMessage = JSON.stringify(outgoingBody);
+                                activeUsers[username].forEach(connection => {
+                                    connection.send(outgoingMessage);
+                                });
+                            }
+                        }
+                    })
+                    .catch(err => console.error('Error'))
             }
 
         });

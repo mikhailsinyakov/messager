@@ -41,34 +41,34 @@ module.exports = function() {
             .catch(err => res.status(500).send({status: 'Network error'}));
     };
 
-    this.addMessage = (req, res) => {//test
-        const username = req.params.username;
-        const penPalUsername = req.params.penPalUsername;
-        const text = req.body.text;
-        Dialogs.findOne({$or: [
-            {username1: username,  username2: penPalUsername}, 
-            {username1: penPalUsername, username2: username}
-        ]}).then(dialog => {
-            const date = new Date();
-            const sender = username;
-            const read = false;
-            if (!dialog) {
-                const newDialog = new Dialogs({
-                    username1: username,
-                    username2: penPalUsername,
-                    messages:[{date, sender, text, read}]
-                    });
-                newDialog.save()
-                    .then(() => res.status(200).send({status: 'Success'}))
-                    .catch(err => res.status(500).send({status: 'Network error'}));
-            }
-            else {
-                dialog.messages.push({date, sender, text, read});
-                dialog.save()
-                    .then(() => res.status(200).send({status: 'Success'}))
-                    .catch(err => res.status(500).send({status: 'Network error'}));
-            }
-        })
+    this.addMessage = (username, penPalUsername, text) => {
+        return new Promise((resolve, reject) => {
+            Dialogs.findOne({$or: [
+                {username1: username,  username2: penPalUsername}, 
+                {username1: penPalUsername, username2: username}
+            ]}).then(dialog => {
+                const date = new Date();
+                const sender = username;
+                const read = false;
+                if (!dialog) {
+                    const newDialog = new Dialogs({
+                        username1: username,
+                        username2: penPalUsername,
+                        messages:[{date, sender, text, read}]
+                        });
+                    newDialog.save()
+                        .then(() => resolve({date, sender, text, read}))
+                        .catch(err => reject(err));
+                }
+                else {
+                    dialog.messages.push({date, sender, text, read});
+                    dialog.save()
+                        .then(() => resolve({date, sender, text, read}))
+                        .catch(err => reject(err));
+                }
+            })
+        });
+        
     }
 
     this.removeDialog = (req, res) => {//test
