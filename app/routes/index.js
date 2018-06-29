@@ -34,7 +34,9 @@ module.exports = app => {
         .put(friendshipController.changeFriendshipState);
 
     app.route('/api/users/:username/dialogs/:penPalUsername')
-        .get(dialogController.getDialogInfo);
+        .get(dialogController.getDialogInfo)
+        .put(dialogController.addMessage)//test
+        .delete(dialogController.removeDialog)//test
     
     app.route('/api/users/:username/files/:name')
         .get(imageController.getImage)

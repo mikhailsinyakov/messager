@@ -41,7 +41,7 @@ module.exports = function() {
             .catch(err => res.status(500).send({status: 'Network error'}));
     };
 
-    /*this.addMessage = (req, res) => {//test
+    this.addMessage = (req, res) => {//test
         const username = req.params.username;
         const penPalUsername = req.params.penPalUsername;
         const text = req.body.text;
@@ -79,6 +79,6 @@ module.exports = function() {
             {username1: penPalUsername, username2: username}
         ]}).then(() => res.status(200).send({status: 'Success'}))
         .catch(err => res.status(500).send({status: 'Network error'}));
-    }*/
+    }
 
 }

@@ -7,6 +7,7 @@ import Settings from './Settings';
 import Search from './Search';
 import UserInfoRoute from './UserInfoRoute';
 import Friends from './Friends';
+import DialogsRoute from './DialogsRoute';
 
 export default function UsersRoute(props) {
     const userInfoPath = `/users/${props.username}/info`;
@@ -43,6 +44,14 @@ export default function UsersRoute(props) {
                         />
                     )}
                 />
+                <Route 
+                    path={props.match.url + '/:username/dialogs'}
+                    render={({match}) => (
+                        <DialogsRoute match={match} username={props.username} />
+                    )}
+                />
+
+
                 <Route 
                     render={() => <Redirect to={userInfoPath}/> }
                 />
