@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import websocket from '@app/websocket/client';
 
 import DialogController from '@app/controllers/dialogController.client';
 
@@ -13,15 +14,13 @@ export default class Dialogs extends React.Component {
         this.state = {
             dialogs: []
         };
+        this.getAndUpdateDialogs = this.getAndUpdateDialogs.bind(this);
+        this.listenOnWSEvents = this.listenOnWSEvents.bind(this);
         this.updateDialogs = this.updateDialogs.bind(this);
         this.abortControllers = [];
     }
 
-    updateDialogs(dialogs) {
-        this.setState({ dialogs });
-    }
-
-    componentDidMount() {
+    getAndUpdateDialogs() {
         const controller = new AbortController();
         const signal = controller.signal;
         this.abortControllers.push(controller);
@@ -34,6 +33,20 @@ export default class Dialogs extends React.Component {
                 }
             })
             .catch(err => console.error('Network error'));
+    }
+
+    updateDialogs(dialogs) {
+        this.setState({ dialogs });
+    }
+
+    listenOnWSEvents() {
+        websocket.gotNewMessage(this.getAndUpdateDialogs);
+        websocket.gotNewMessageStatus(this.getAndUpdateDialogs);
+    }
+
+    componentDidMount() {
+        this.getAndUpdateDialogs();
+        this.listenOnWSEvents();
     }
 
     componentWillUnmount() {

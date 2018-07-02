@@ -68,6 +68,26 @@ module.exports = function handleWebSocketConnection(server) {
                         }
                     })
             }
+            else if (event == 'message status has changed') {
+                const { username1, username2, index } = incomingBody;
+                dialogController.changeStatusOfMessage(username1, username2, index)
+                    .then(() => {
+                        const outgoingBody = {
+                            event: 'message status has changed', 
+                            username1, 
+                            username2, 
+                            index
+                        };
+                        const outgoingMessage = JSON.stringify(outgoingBody);
+                        for (const username in activeUsers) {
+                            if (username == username1 || username == username2) {
+                                activeUsers[username].forEach(connection => {
+                                    connection.send(outgoingMessage);
+                                });
+                            }
+                        }
+                    }).catch(err => console.error(err));
+            }
 
         });
 

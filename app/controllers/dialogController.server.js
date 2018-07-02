@@ -84,6 +84,20 @@ module.exports = function() {
         
     }
 
+    this.changeStatusOfMessage = (username1, username2, index) => {
+        return new Promise((resolve, reject) => {
+            Dialogs.findOne({$or: [
+                {username1: username1,  username2: username2}, 
+                {username1: username2, username2: username1}
+            ]}).then(dialog => {
+                dialog.messages[index].read = true;
+                dialog.save()
+                    .then(() => resolve())
+                    .catch(err => reject(err));
+            }).catch(err => reject(err));
+        });
+    }
+
     this.removeDialog = (req, res) => {//test
         const username = req.params.username;
         const penPalUsername = req.params.penPalUsername;

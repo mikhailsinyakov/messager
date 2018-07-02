@@ -47,6 +47,15 @@ export default (function websocket() {
         ready(() => sendJSON({event: 'new message', username1, username2, text}));
     }
 
+    function sendChangedMessagesIndexes(username1, username2, index) {
+        ready(() => sendJSON({
+            event: 'message status has changed', 
+            username1, 
+            username2, 
+            index
+        }));
+    }
+
     function onMessage (event, fn) {
         if (!ws) createConnection();
         ws.addEventListener('message', message => {
@@ -64,6 +73,10 @@ export default (function websocket() {
         onMessage('new message', fn);
     }
 
+    function gotNewMessageStatus (fn) {
+        onMessage('message status has changed', fn);
+    }
+
     function gotError (fn) {
         onMessage('error', fn);
     }
@@ -79,7 +92,9 @@ export default (function websocket() {
         friendshipStatusChanged,
         close,
         sendMessage,
+        sendChangedMessagesIndexes,
         gotNewMessage,
+        gotNewMessageStatus,
         gotError
     }
 

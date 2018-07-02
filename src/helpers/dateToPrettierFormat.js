@@ -21,10 +21,10 @@ export default function dateToPrettierFormat(date) {
         day = 'Сегодня';
     }
     else if (dateYear == thisYear) {
-        day = `${addNullToNumber(dateDay)}-${addNullToNumber(dateMonth) + 1}`;
+        day = `${addNullToNumber(dateDay)}-${addNullToNumber(dateMonth + 1)}`;
     }
     else {
-        day = `${addNullToNumber(dateDay)}-${addNullToNumber(dateMonth) + 1}-${dateYear}`;
+        day = `${addNullToNumber(dateDay)}-${addNullToNumber(dateMonth + 1)}-${dateYear}`;
     }
     
     const time = `${addNullToNumber(dateHours)}:${addNullToNumber(dateMinutes)}`;
