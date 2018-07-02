@@ -81,4 +81,13 @@ module.exports = function() {
         }
     };
 
+    this.userExists = username => {
+        return new Promise((resolve, reject) => {
+            Users.findOne({username})
+                .then(user => {
+                    resolve(!!user);
+                }).catch(err => reject(err));
+        });
+    }
+
 };

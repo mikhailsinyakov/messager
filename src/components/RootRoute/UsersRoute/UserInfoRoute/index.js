@@ -76,57 +76,69 @@ export default class UserInfoRoute extends React.Component {
 
     render() {
 
-        if (!this.state.gotUserInfo) {
-            return null;
-        }
+        if (!this.state.gotUserInfo) return null;
 
         const { match, username, friendRequestsInfo, websocket } = this.props;
+        const { params: { username: friendUsername } } = match;
         const {firstName, lastName, phoneNumber,
             city, birthDate, aboutYourself} = this.state;
 
-        return (
+        const ActionButtons = () => (
             <React.Fragment>
-                <Switch>
-                    <Route 
-                        exact path={match.url}
-                        render={() => (
-                            <React.Fragment>
-                                <UserInfo 
-                                    firstName={firstName}
-                                    lastName={lastName}
-                                    phoneNumber={phoneNumber}
-                                    city={city}
-                                    birthDate={birthDate}
-                                    aboutYourself={aboutYourself}
-                                    username={match.params.username}
-                                />
-                                {
-                                    match.params.username == username
-                                        ? <Link to={match.url + '/edit'}>Изменить</Link>
-                                        : <FriendState 
-                                            username={username}
-                                            friendUsername={match.params.username}
-                                            friendRequestsInfo={friendRequestsInfo}
-                                        />
-                                }
-                            </React.Fragment>
-                        )}
-                    />
-                    <Route  
-                        exact path={match.url + '/edit'}
-                        render={() => (
-                            <ChangeInfo username={username}
-                                matchedUsername={match.params.username}
-                                infoState={this.state}
-                                getUserInfo={this.getUserInfo} 
-                                addUserInfoToState={this.addUserInfoToState}
-                                toPrettierFormat={this.toPrettierFormat}
-                            />
-                        )}
-                    />
-                    <Route render={() => <Redirect to={match.url}/>} />
-                </Switch>
+                <FriendState 
+                    username={username}
+                    friendUsername={friendUsername}
+                    friendRequestsInfo={friendRequestsInfo}
+                />
+                <Link to={`/users/${username}/dialogs/${friendUsername}`}>
+                    <button type="button">
+                        Написать сообщение
+                    </button>
+                </Link>
             </React.Fragment>
+        );
+
+        const showUserInfo = () => (
+            <React.Fragment>
+                <UserInfo 
+                    firstName={firstName}
+                    lastName={lastName}
+                    phoneNumber={phoneNumber}
+                    city={city}
+                    birthDate={birthDate}
+                    aboutYourself={aboutYourself}
+                    username={friendUsername}
+                />
+                {
+                    friendUsername == username
+                        ? <Link to={match.url + '/edit'}>Изменить</Link>
+                        : <ActionButtons/>
+                }
+            </React.Fragment>
+        );
+
+        const showEditingInfo = () => (
+            <ChangeInfo username={username}
+                matchedUsername={friendUsername}
+                infoState={this.state}
+                getUserInfo={this.getUserInfo} 
+                addUserInfoToState={this.addUserInfoToState}
+                toPrettierFormat={this.toPrettierFormat}
+            />
+        );
+
+        return (
+            <Switch>
+                <Route 
+                    exact path={match.url}
+                    render={showUserInfo}
+                />
+                <Route  
+                    exact path={match.url + '/edit'}
+                    render={showEditingInfo}
+                />
+                <Route render={() => <Redirect to={match.url}/>} />
+            </Switch>
         );
          
     }

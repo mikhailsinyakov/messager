@@ -26,6 +26,11 @@ export default function Header (props) {
                     Мои друзья {areWaitingUsers && `(${numWaitingUsers})`}
                 </Link>
             </li>
+            <li>
+                <Link to={`/users/${username}/dialogs`}>
+                    Сообщения
+                </Link>
+            </li>
             <li><Link to={`/users/${username}/settings`} >Настройки</Link></li>
             <li><Link to='/users'>Поиск</Link></li>
             <li><a href='/api/logout'>Выйти</a></li>

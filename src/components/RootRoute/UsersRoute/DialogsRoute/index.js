@@ -8,7 +8,7 @@ import Dialog from './Dialog';
 export default function DialogsRoute(props) {
     const { username, match} = props;
     if (match.params.username != username) {
-        return <h1>У Вас нет доступа к этой странице</h1>;
+        return <Redirect to={`/users/${username}/dialogs`} />;
     }
     return (
         <Switch>

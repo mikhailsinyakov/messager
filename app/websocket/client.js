@@ -64,6 +64,10 @@ export default (function websocket() {
         onMessage('new message', fn);
     }
 
+    function gotError (fn) {
+        onMessage('error', fn);
+    }
+
     function close() {
         ws.close();
     }
@@ -75,7 +79,8 @@ export default (function websocket() {
         friendshipStatusChanged,
         close,
         sendMessage,
-        gotNewMessage
+        gotNewMessage,
+        gotError
     }
 
 })();

@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import UserController from '@app/controllers/userController.client';
 
 const userController = new UserController();
@@ -69,44 +70,48 @@ export default class ChangeInfo extends React.Component {
         const properNameRegex = /[A-ZА-Яa-zа-я\-]*/;
         const phoneNumberRegex = /[\d\-\(\)\+\s]*/;
 
-        if (this.props.matchedUsername != this.props.username) {
-            return <h3>У вас нет доступа к этой странице</h3>;
+        const { username, matchedUsername } = this.props;
+        const { firstName, lastName, phoneNumber, 
+            city, birthDate, aboutYourself } = this.state;
+
+        if (matchedUsername != username) {
+            return <Redirect to={`/users/${username}/info`} />;
         }
 
         return (
             <form id="changeInfo">
                 <label>Ник: 
-                    <input type="text" name="username" value={this.props.username}
+                    <input type="text" name="username" value={username}
                             readOnly autoComplete="username"/>
                 </label><br/>
                 <label>Имя: 
-                    <input type="text" name="firstName" value={this.state.firstName}
+                    <input type="text" name="firstName" value={firstName}
                             autoComplete="given-name"
                             onChange={e => this.handleInput(e.target, properNameRegex)} />
                 </label><br/>
                 <label>Фамилия: 
-                    <input type="text" name="lastName" value={this.state.lastName}
+                    <input type="text" name="lastName" value={lastName}
                             autoComplete="family-name"
                             onChange={e => this.handleInput(e.target, properNameRegex)} />
                 </label><br/>
                 <label>Номер телефона: 
-                    <input type="tel" name="phoneNumber" value={this.state.phoneNumber}
+                    <input type="tel" name="phoneNumber" value={phoneNumber}
                             autoComplete="tel-national"
                             onFocus={this.addFirstCharsIfNumberIsEmpty}
                             onChange={e => this.handleInput(e.target, phoneNumberRegex)} />
                 </label><br/>
                 <label>Город: 
-                    <input type="text" name="city" value={this.state.city}
+                    <input type="text" name="city" value={city}
                             autoComplete="address-level2"
                             onChange={e => this.handleInput(e.target, properNameRegex)} />
                 </label><br/>
                 <label>Дата рождения: 
-                    <input type="date" name="birthDate" value={this.state.birthDate}
+                    <input type="date" name="birthDate" value={birthDate}
                             autoComplete="bday"
                             onChange={e => this.handleInput(e.target)} />
                 </label><br/>
                 <label>О себе: 
-                    <textarea name="aboutYourself" value={this.state.aboutYourself}
+                    <textarea name="aboutYourself" value={aboutYourself}
                         onChange={e => this.handleInput(e.target)}>
                     </textarea>
                 </label><br/>

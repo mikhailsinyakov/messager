@@ -15,12 +15,14 @@ export default class Dialog extends React.Component {
         super(props);
         this.state = {
             messages: [],
-            newMessage: ''
+            newMessage: '',
+            error: null
         };
         this.updateMessages = this.updateMessages.bind(this);
         this.handleInput = this.handleInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.addMessage = this.addMessage.bind(this);
+        this.addErrorTooltip = this.addErrorTooltip.bind(this);
         this.abortControllers = [];
     }
 
@@ -45,6 +47,10 @@ export default class Dialog extends React.Component {
         this.setState({messages});
     }
 
+    addErrorTooltip(error) {
+        this.setState({error});
+    }
+
     componentDidMount() {
         const controller = new AbortController();
         const signal = controller.signal;
@@ -60,6 +66,11 @@ export default class Dialog extends React.Component {
             .catch(err => console.error('Network error'));
 
         websocket.gotNewMessage(obj => this.addMessage(obj.message));
+        websocket.gotError(obj => {
+            if (obj.errName == 'Specified user doesn\'t exist') {
+                this.addErrorTooltip(obj.message);
+            }
+        });
     }
 
     componentWillUnmount() {
@@ -86,11 +97,16 @@ export default class Dialog extends React.Component {
             )
         });
 
+        const error = this.state.error 
+            ? <p>Пользователь, которому вы написали сообщение не существует</p> 
+            : null;
+
         return (
             <div>
                 {messages}
                 <input type="text" value={this.state.newMessage} onChange={this.handleInput}/>
                 <button type="button" onClick={this.handleSubmit}>Отправить</button>
+                {error}
             </div>
         );
     }

@@ -1,6 +1,9 @@
 'use strict';
 
 const Dialogs = require('../models/dialogs');
+const UserController = require('./userController.server');
+
+const userController = new UserController();
 
 module.exports = function() {
 
@@ -43,30 +46,40 @@ module.exports = function() {
 
     this.addMessage = (username, penPalUsername, text) => {
         return new Promise((resolve, reject) => {
-            Dialogs.findOne({$or: [
-                {username1: username,  username2: penPalUsername}, 
-                {username1: penPalUsername, username2: username}
-            ]}).then(dialog => {
-                const date = new Date();
-                const sender = username;
-                const read = false;
-                if (!dialog) {
-                    const newDialog = new Dialogs({
-                        username1: username,
-                        username2: penPalUsername,
-                        messages:[{date, sender, text, read}]
-                        });
-                    newDialog.save()
-                        .then(() => resolve({date, sender, text, read}))
-                        .catch(err => reject(err));
-                }
-                else {
-                    dialog.messages.push({date, sender, text, read});
-                    dialog.save()
-                        .then(() => resolve({date, sender, text, read}))
-                        .catch(err => reject(err));
-                }
-            })
+            const promises = [
+                userController.userExists(username),
+                userController.userExists(penPalUsername)
+            ];
+            Promise.all(promises)
+                .then(result => {
+                    if (!result[0] || !result[1]) {
+                        return reject('Specified user doesn\'t exist');
+                    }
+                    Dialogs.findOne({$or: [
+                        {username1: username,  username2: penPalUsername}, 
+                        {username1: penPalUsername, username2: username}
+                    ]}).then(dialog => {
+                        const date = new Date();
+                        const sender = username;
+                        const read = false;
+                        if (!dialog) {
+                            const newDialog = new Dialogs({
+                                username1: username,
+                                username2: penPalUsername,
+                                messages:[{date, sender, text, read}]
+                            });
+                            newDialog.save()
+                                .then(() => resolve({date, sender, text, read}))
+                                .catch(err => reject(err));
+                        }
+                        else {
+                            dialog.messages.push({date, sender, text, read});
+                            dialog.save()
+                                .then(() => resolve({date, sender, text, read}))
+                                .catch(err => reject(err));
+                        }
+                    })
+                }).catch(err => reject(err));
         });
         
     }

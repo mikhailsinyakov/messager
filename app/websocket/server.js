@@ -58,7 +58,15 @@ module.exports = function handleWebSocketConnection(server) {
                             }
                         }
                     })
-                    .catch(err => console.error('Error'))
+                    .catch(err => {
+                        if (err == 'Specified user doesn\'t exist') {
+                            const outgoingBody = {event: 'error', errName: err};
+                            const outgoingMessage = JSON.stringify(outgoingBody);
+                            activeUsers[username1].forEach(connection => {
+                                connection.send(outgoingMessage);
+                            });
+                        }
+                    })
             }
 
         });

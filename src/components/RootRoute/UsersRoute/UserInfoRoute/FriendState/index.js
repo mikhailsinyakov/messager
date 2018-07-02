@@ -4,8 +4,7 @@ import React from 'react';
 import ChangeFriendState from '@src/components/common/ChangeFriendStateBtn';
 
 export default function FriendState (props) {
-    const { username, friendUsername, friendRequestsInfo, 
-        websocket } = props;
+    const { username, friendUsername, friendRequestsInfo } = props;
     const { friendsList, followersList, usersIFollow } = friendRequestsInfo;
 
     function ChangeFriendStateProto(props) {

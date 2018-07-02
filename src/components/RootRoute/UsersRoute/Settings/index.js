@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import ChangePhoto from './ChangePhoto';
 import ChangePassword from './ChangePassword';
 
@@ -29,17 +30,18 @@ export default class Settings extends React.Component {
     }
 
     render() {
-        const { params } = this.props.match;
+        const { match, username } = this.props;
+        const { params } = match;
 
-        if (params.username != this.props.username) {
-            return <h3>У вас нет доступа к этой странице</h3>;
+        if (params.username != username) {
+            return <Redirect to={`/users/${username}/info`} />;
         }
 
         return (
             <div id="settings">
                 <img src={this.state.imgSrc} height={200} onError={this.handleImgError} />
                 <ChangePhoto updatePhoto={this.updateImg}/>
-                <ChangePassword username={this.props.username} />
+                <ChangePassword username={username} />
             </div>
         );
     }
