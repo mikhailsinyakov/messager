@@ -47,7 +47,9 @@ export default function UsersRoute(props) {
                 <Route 
                     path={props.match.url + '/:username/dialogs'}
                     render={({match}) => (
-                        <DialogsRoute match={match} username={props.username} />
+                        <DialogsRoute 
+                            match={match} username={props.username} 
+                        />
                     )}
                 />
 

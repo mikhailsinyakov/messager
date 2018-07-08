@@ -9,6 +9,9 @@ module.exports = function() {
 
     this.getAllDialogsInfo = (req, res) => {
         const username = req.params.username;
+        if (!req.user || req.user.username !== username) {
+            return res.status(401).send({status: 'Not authorized'});
+        }
         Dialogs.find({$or: [{username1: username}, {username2: username}]})
             .then(dialogs => {
                 dialogs = dialogs.map(dialog => {
@@ -26,6 +29,9 @@ module.exports = function() {
     this.getDialogInfo = (req, res) => {
         const username = req.params.username;
         const penPalUsername = req.params.penPalUsername;
+        if (!req.user || req.user.username !== username) {
+            return res.status(401).send({status: 'Not authorized'});
+        }
         Dialogs.findOne({$or: [
             {username1: username,  username2: penPalUsername}, 
             {username1: penPalUsername, username2: username}
@@ -42,6 +48,24 @@ module.exports = function() {
                 res.status(200).send({status: 'Success', messages})
             })
             .catch(err => res.status(500).send({status: 'Network error'}));
+    };
+
+    this.getNumUnreadMessages = (req, res) => {
+        const { username } = req.params;
+        if (!req.user || req.user.username !== username) {
+            return res.status(401).send({status: 'Unauthorized'});
+        }
+        Dialogs.find({$or: [{username1: username}, {username2: username}]})
+            .then(dialogs => {
+                let number = 0;
+                dialogs.forEach(dialog => {
+                    dialog.messages.forEach(message => {
+                        const { sender, read } = message;
+                        if (sender != username && !read) number++;
+                    });
+                });
+                res.status(200).send({status: 'Success', number});
+            }).catch(err => res.status(500).send({status: 'Network error'}));
     };
 
     this.addMessage = (username, penPalUsername, text) => {

@@ -14,7 +14,7 @@ export default function Header (props) {
         </ul>
     );
 
-    const { username, friendRequestsInfo } = props;
+    const { username, friendRequestsInfo, numUnreadMessages } = props;
     const numWaitingUsers = friendRequestsInfo.usersWaitingForAnswer.length;
     const areWaitingUsers = !!numWaitingUsers;
 
@@ -28,7 +28,7 @@ export default function Header (props) {
             </li>
             <li>
                 <Link to={`/users/${username}/dialogs`}>
-                    Сообщения
+                    Сообщения {!!numUnreadMessages && `(${numUnreadMessages})`}
                 </Link>
             </li>
             <li><Link to={`/users/${username}/settings`} >Настройки</Link></li>

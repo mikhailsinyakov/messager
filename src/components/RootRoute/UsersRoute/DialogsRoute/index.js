@@ -14,11 +14,15 @@ export default function DialogsRoute(props) {
         <Switch>
             <Route 
                 exact path={match.url}
-                render={({match}) => <Dialogs match={match} username={username} />}
+                render={({match}) => <Dialogs 
+                    match={match} username={username} 
+                />}
             />
             <Route 
                 exact path={match.url + '/:penPalUsername'}
-                render={({match}) => <Dialog match={match} username={username} />}
+                render={({match}) => <Dialog 
+                    match={match} username={username} 
+                />}
             />
             <Route 
                 render={() => <Redirect to={match.url} />}

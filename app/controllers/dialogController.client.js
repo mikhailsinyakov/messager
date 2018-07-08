@@ -14,4 +14,9 @@ export default function () {
         const url = `/api/users/${username}/dialogs/${penPalUsername}`;
         return requestController.sendRequest(url, undefined, signal);
     };
+
+    this.getNumUnreadMessages = (username, signal) => {
+        const url = `/api/users/${username}/messages`;
+        return requestController.sendRequest(url, undefined, signal);
+    };
 }

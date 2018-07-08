@@ -27,6 +27,9 @@ module.exports = app => {
     app.route('/api/users/:username/friends')
         .get(friendshipController.getFriendRequestsInfo);
 
+    app.route('/api/users/:username/messages')
+        .get(dialogController.getNumUnreadMessages);
+
     app.route('/api/users/:username/dialogs')
         .get(dialogController.getAllDialogsInfo);
 

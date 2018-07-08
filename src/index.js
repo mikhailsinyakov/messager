@@ -10,9 +10,11 @@ import RootRoute from './components/RootRoute';
 
 import UserController from '@app/controllers/userController.client';
 import FriendshipController from '@app/controllers/friendshipController.client';
+import DialogController from '@app/controllers/dialogController.client';
 
 const userController = new UserController();
 const friendshipController = new FriendshipController();
+const dialogController = new DialogController();
 
 const app = document.querySelector('#app');
 
@@ -27,13 +29,16 @@ class App extends React.Component {
                 usersIFollow: [],
                 usersWaitingForAnswer: []
             },
+            numUnreadMessages: 0,
             updated: false
         };
 
         this.abortControllers = [];
         this.getUsername = this.getUsername.bind(this);
         this.getFriendRequestsInfo = this.getFriendRequestsInfo.bind(this);
+        this.getNumUnreadMessages = this.getNumUnreadMessages.bind(this);
         this.updateFriendshipRequestsInfo = this.updateFriendshipRequestsInfo.bind(this);
+        this.updateNumUnreadMessages = this.updateNumUnreadMessages.bind(this);
     }
 
     getUsername() {
@@ -75,10 +80,32 @@ class App extends React.Component {
             });
     }
 
+    getNumUnreadMessages() {
+        const controller = new AbortController();
+        const { signal } = controller;
+        this.abortControllers.push(controller);
+        const { username } = this.state;
+        dialogController.getNumUnreadMessages(username, signal)
+            .then(this.updateNumUnreadMessages)
+            .catch(err => {
+                if (err.name == 'AbortError') {
+                    return;
+                }
+                console.error('Network error');
+            });
+    }
+
     updateFriendshipRequestsInfo(data) {
         if (data.status == 'Success') {
             const { friendRequestsInfo } = data;
             this.setState({friendRequestsInfo});
+        }
+    }
+
+    updateNumUnreadMessages(data) {
+        if (data.status == 'Success') {
+            const { number } = data;
+            this.setState({numUnreadMessages: number});
         }
     }
 
@@ -89,7 +116,10 @@ class App extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevState.username != this.state.username) {
             this.getFriendRequestsInfo();
+            this.getNumUnreadMessages();
             websocket.subscribe('friendshipStatus', this.getFriendRequestsInfo);
+            websocket.subscribe('newMessage', this.getNumUnreadMessages);
+            websocket.subscribe('newMessageStatus', this.getNumUnreadMessages)
         }
     }
 
@@ -103,16 +133,18 @@ class App extends React.Component {
         if (!this.state.updated) {
             return null;
         }
+        const { username, friendRequestsInfo, numUnreadMessages } = this.state;
         return (
             <React.Fragment>
                 <Header 
-                    username={this.state.username}
-                    friendRequestsInfo={this.state.friendRequestsInfo}
+                    username={username}
+                    friendRequestsInfo={friendRequestsInfo}
+                    numUnreadMessages={numUnreadMessages}
                 />
                 <RootRoute
-                    username={this.state.username}
+                    username={username}
                     getUsername={this.getUsername}
-                    friendRequestsInfo={this.state.friendRequestsInfo}
+                    friendRequestsInfo={friendRequestsInfo}
                 />
             </React.Fragment>
         );
