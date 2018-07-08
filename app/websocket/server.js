@@ -72,12 +72,7 @@ module.exports = function handleWebSocketConnection(server) {
                 const { username1, username2, index } = incomingBody;
                 dialogController.changeStatusOfMessage(username1, username2, index)
                     .then(() => {
-                        const outgoingBody = {
-                            event: 'message status has changed', 
-                            username1, 
-                            username2, 
-                            index
-                        };
+                        const outgoingBody = { ...incomingBody };
                         const outgoingMessage = JSON.stringify(outgoingBody);
                         for (const username in activeUsers) {
                             if (username == username1 || username == username2) {
@@ -87,6 +82,18 @@ module.exports = function handleWebSocketConnection(server) {
                             }
                         }
                     }).catch(err => console.error(err));
+            }
+            else if (event == 'user is typing') {
+                const { username1, username2 } = incomingBody;
+                const outgoingBody = { ...incomingBody };
+                const outgoingMessage = JSON.stringify(outgoingBody);
+                for (const username in activeUsers) {
+                    if (username == username2) {
+                        activeUsers[username].forEach(connection => {
+                            connection.send(outgoingMessage);
+                        });
+                    }
+                }
             }
 
         });

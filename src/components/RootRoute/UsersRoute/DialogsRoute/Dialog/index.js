@@ -16,6 +16,8 @@ export default class Dialog extends React.Component {
         this.state = {
             messages: [],
             newMessage: '',
+            penPalIsTyping: false,
+            timerId: null,
             error: null
         };
         this.getAndUpdateMessages = this.getAndUpdateMessages.bind(this);
@@ -25,6 +27,7 @@ export default class Dialog extends React.Component {
         this.handleInput = this.handleInput.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.addMessage = this.addMessage.bind(this);
+        this.toggleTypingMessage = this.toggleTypingMessage.bind(this);
         this.addErrorTooltip = this.addErrorTooltip.bind(this);
         this.checkIfAnotherUnreadMessages = this.checkIfAnotherUnreadMessages.bind(this);
         this.sendUnreadMessagesIndexesIfAny = this.sendUnreadMessagesIndexesIfAny.bind(this);
@@ -50,12 +53,13 @@ export default class Dialog extends React.Component {
     listenOnWSEvents() {
         const id1 = websocket.subscribe('newMessage', obj => this.addMessage(obj.message));
         const id2 = websocket.subscribe('newMessageStatus', this.updateMessageStatus);
-        const id3 = websocket.subscribe('error', obj => {
+        const id3 = websocket.subscribe('userIsTyping', this.toggleTypingMessage)
+        const id4 = websocket.subscribe('error', obj => {
             if (obj.errName == 'Specified user doesn\'t exist') {
                 this.addErrorTooltip(obj.message);
             }
         });
-        this.wsListenId.push(id1, id2, id3);
+        this.wsListenId.push(id1, id2, id3, id4);
     }
  
     updateMessages(messages) {
@@ -73,7 +77,24 @@ export default class Dialog extends React.Component {
             }
     }
 
+    toggleTypingMessage(obj) {
+        const { username, 
+            match: { params: { penPalUsername } } } = this.props;
+        const { username1, username2 } = obj;
+        if (username1 != penPalUsername) return;
+        
+        if (this.state.timerId) clearTimeout(this.state.timerId);
+        const timerId = setTimeout(() => {
+            this.setState({penPalIsTyping: false, timerId: null})
+        }, 1000);
+        this.setState({penPalIsTyping: true, timerId});
+        
+    }
+
     handleInput(e) {
+        const { username: username1, 
+            match: { params: { penPalUsername: username2 } } } = this.props;
+        websocket.send('userIsTyping', { username1, username2 });
         this.setState({newMessage: e.target.value});
     }
 
@@ -133,8 +154,8 @@ export default class Dialog extends React.Component {
     }
 
     render() {
+        const { username, match: { params: { penPalUsername } } } = this.props;
         const messages = this.state.messages.map((message, i) => {
-            const { username } = this.props;
             const { sender, text, read } = message;
             let { date } = message;
             date = dateToPrettierFormat(new Date(date));
@@ -159,6 +180,7 @@ export default class Dialog extends React.Component {
         return (
             <div>
                 {messages}
+                {this.state.penPalIsTyping && <p>{penPalUsername} печатает сообщение</p>}
                 <input type="text" value={this.state.newMessage} onChange={this.handleInput}/>
                 <button type="button" onClick={this.handleSubmit}>Отправить</button>
                 {error}

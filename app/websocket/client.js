@@ -76,6 +76,7 @@ export default (function websocket() {
             else if (name == 'usernamesWithChangedStatus') event = 'friendship status changed';
             else if (name == 'message') event = 'new message';
             else if (name == 'indexOfChangedMessage') event = 'message status has changed';
+            else if (name == 'userIsTyping') event = 'user is typing';
             sendJSON({ event, ...obj });
         },
         subscribe: (name, fn) => {
@@ -83,6 +84,7 @@ export default (function websocket() {
             if (name == 'friendshipStatus') event = 'friendship status changed';
             else if (name == 'newMessage') event = 'new message';
             else if (name == 'newMessageStatus') event = 'message status has changed';
+            else if (name == 'userIsTyping') event = 'user is typing';
             else if (name == 'error') event = 'error';
             return subscribe(event, fn);
         },
