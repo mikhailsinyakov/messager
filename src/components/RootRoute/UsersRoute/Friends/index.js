@@ -69,8 +69,7 @@ export default class Friends extends React.Component {
     }
 
     render() {
-        const { username, friendRequestsInfo, 
-            websocket } = this.props;
+        const { username, friendRequestsInfo, onlineUsers } = this.props;
         const { userInfo } = this.state;
 
         const { 
@@ -97,6 +96,7 @@ export default class Friends extends React.Component {
                 />
             );
         }
+        const checkUserOnline = username => !!onlineUsers.filter(user => user == username).length;
 
         const createFriendElem = (friendUsername, isFriend) => (
             <div key={friendUsername}>
@@ -110,6 +110,7 @@ export default class Friends extends React.Component {
                         ? <span> {userInfo[friendUsername]}</span> 
                         : <span>{friendUsername}</span>}
                 </Link>
+                {checkUserOnline(friendUsername) && <span>Online</span>}
                 {isFriend 
                     ?   <ChangeFriendStateProto 
                             description="Убрать из друзей" newFriendState="rejected"

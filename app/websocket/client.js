@@ -85,6 +85,7 @@ export default (function websocket() {
             else if (name == 'newMessage') event = 'new message';
             else if (name == 'newMessageStatus') event = 'message status has changed';
             else if (name == 'userIsTyping') event = 'user is typing';
+            else if (name == 'onlineUsersChanged') event = 'list of online users has changed'
             else if (name == 'error') event = 'error';
             return subscribe(event, fn);
         },

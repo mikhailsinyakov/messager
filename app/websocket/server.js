@@ -10,8 +10,32 @@ module.exports = function handleWebSocketConnection(server) {
     const ws = new WebSocket.Server({server});
     const activeUsers = {};
 
+    const getOnlineUsers = () => {
+        const users = [];
+        for (const username in activeUsers) {
+            users.push(username);
+        }
+        return users;
+    };
+    const sendMessageToAllUsers = outgoingBody => {
+        for (const username in activeUsers) {
+            const outgoingMessage = JSON.stringify(outgoingBody);
+            activeUsers[username].forEach(connection => {
+                connection.send(outgoingMessage);
+            });
+        }
+    };
+    const sendOnlineUsers = () => {
+        const onlineUsers = getOnlineUsers();
+        const outgoingBody = {
+            event: 'list of online users has changed',
+            onlineUsers
+        };
+        sendMessageToAllUsers(outgoingBody);
+    };
+
     ws.on('connection', connection => {
-        let currUser;
+        let currUser = {};
 
         connection.on('message', incomingMessage => {
             const incomingBody = JSON.parse(incomingMessage);
@@ -19,7 +43,7 @@ module.exports = function handleWebSocketConnection(server) {
 
             if (event == 'connection is open') {
                 const { username } = incomingBody;
-                currUser = { username };
+                currUser.username = username;
                 if (!activeUsers[currUser.username]) {
                     const id = 0;
                     activeUsers[currUser.username] = [connection];
@@ -30,6 +54,8 @@ module.exports = function handleWebSocketConnection(server) {
                     activeUsers[currUser.username].push(connection);
                     currUser.id = id;
                 }
+                sendOnlineUsers();
+
             }
             else if (event == 'friendship status changed') {
                 const { username1, username2 } = incomingBody;
@@ -107,6 +133,7 @@ module.exports = function handleWebSocketConnection(server) {
                     activeUsers[currUser.username].splice(currUser.id, 1);
                 }
             }
+            sendOnlineUsers();
         });
     });
 

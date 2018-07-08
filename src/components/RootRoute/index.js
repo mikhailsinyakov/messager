@@ -32,6 +32,7 @@ export default function RootRoute (props) {
                             ? <UsersRoute
                                 match={match} username={props.username} 
                                 friendRequestsInfo={props.friendRequestsInfo} 
+                                onlineUsers={props.onlineUsers}
                                 />
                             : <Redirect to='/login'/>
                     )} 

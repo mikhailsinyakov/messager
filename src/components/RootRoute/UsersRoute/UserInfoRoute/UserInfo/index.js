@@ -4,13 +4,16 @@ import React from 'react';
 
 export default function UserInfo (props) {
     const { username, firstName, lastName, phoneNumber,
-        city, birthDate, aboutYourself} = props;
+        city, birthDate, aboutYourself, onlineUsers} = props;
+
+    const isUserOnline = (() => !!onlineUsers.filter(user => user == username).length)();
 
     return (
         <div id="userInfo">
             <img src={`/public/photos/${username}-avatar.jpg`}
                 height={200}
                 onError={e => e.target.src = '/public/photos/placeholder.png'}/>
+            {isUserOnline && <p>Online</p>}
             <p><b>Ник:</b> {username}</p>
             {firstName && <p><b>Имя:</b> {firstName}</p>}
             {lastName && <p><b>Фамилия:</b> {lastName}</p>}

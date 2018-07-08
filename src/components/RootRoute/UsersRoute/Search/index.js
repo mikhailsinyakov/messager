@@ -52,6 +52,8 @@ export default class Search extends React.Component {
     }
 
     render() {
+        const { onlineUsers } = this.props;
+        const checkUserOnline = username => !!onlineUsers.filter(user => user == username).length;
 
         const users = this.state.users.map((val, i) => (
             <div key={i}> 
@@ -65,7 +67,7 @@ export default class Search extends React.Component {
                         ? <span> {val.firstName} {val.lastName}</span> 
                         : <span>{val.username}</span>}
                 </Link>
-                
+                {checkUserOnline(val.username) && <span>Online</span>}
             </div>
         ));
 

@@ -17,7 +17,7 @@ export default function UsersRoute(props) {
             <Switch>
                 <Route
                     exact path={props.match.url}
-                    component={Search}
+                    render={() => <Search onlineUsers={props.onlineUsers} />}
                 />
                 <Route 
                     exact path={props.match.url + '/:username/settings'}
@@ -32,6 +32,7 @@ export default function UsersRoute(props) {
                             match={match} 
                             username={props.username}
                             friendRequestsInfo={props.friendRequestsInfo}
+                            onlineUsers={props.onlineUsers}
                         />
                     )}
                 />
@@ -41,6 +42,7 @@ export default function UsersRoute(props) {
                         <Friends
                             username={props.username}
                             friendRequestsInfo={props.friendRequestsInfo}
+                            onlineUsers={props.onlineUsers}
                         />
                     )}
                 />

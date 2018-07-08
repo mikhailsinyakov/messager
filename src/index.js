@@ -30,6 +30,7 @@ class App extends React.Component {
                 usersWaitingForAnswer: []
             },
             numUnreadMessages: 0,
+            onlineUsers: [],
             updated: false
         };
 
@@ -39,6 +40,7 @@ class App extends React.Component {
         this.getNumUnreadMessages = this.getNumUnreadMessages.bind(this);
         this.updateFriendshipRequestsInfo = this.updateFriendshipRequestsInfo.bind(this);
         this.updateNumUnreadMessages = this.updateNumUnreadMessages.bind(this);
+        this.updateOnlineUsers = this.updateOnlineUsers.bind(this);
     }
 
     getUsername() {
@@ -109,6 +111,11 @@ class App extends React.Component {
         }
     }
 
+    updateOnlineUsers(data) {
+        const { onlineUsers } = data;
+        this.setState({ onlineUsers });
+    }
+
     componentDidMount() {
         this.getUsername();
     }
@@ -119,7 +126,8 @@ class App extends React.Component {
             this.getNumUnreadMessages();
             websocket.subscribe('friendshipStatus', this.getFriendRequestsInfo);
             websocket.subscribe('newMessage', this.getNumUnreadMessages);
-            websocket.subscribe('newMessageStatus', this.getNumUnreadMessages)
+            websocket.subscribe('newMessageStatus', this.getNumUnreadMessages);
+            websocket.subscribe('onlineUsersChanged', this.updateOnlineUsers);
         }
     }
 
@@ -133,7 +141,7 @@ class App extends React.Component {
         if (!this.state.updated) {
             return null;
         }
-        const { username, friendRequestsInfo, numUnreadMessages } = this.state;
+        const { username, friendRequestsInfo, numUnreadMessages, onlineUsers } = this.state;
         return (
             <React.Fragment>
                 <Header 
@@ -145,6 +153,7 @@ class App extends React.Component {
                     username={username}
                     getUsername={this.getUsername}
                     friendRequestsInfo={friendRequestsInfo}
+                    onlineUsers={onlineUsers}
                 />
             </React.Fragment>
         );

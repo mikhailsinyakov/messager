@@ -78,7 +78,7 @@ export default class UserInfoRoute extends React.Component {
 
         if (!this.state.gotUserInfo) return null;
 
-        const { match, username, friendRequestsInfo, websocket } = this.props;
+        const { match, username, friendRequestsInfo, onlineUsers } = this.props;
         const { params: { username: friendUsername } } = match;
         const {firstName, lastName, phoneNumber,
             city, birthDate, aboutYourself} = this.state;
@@ -108,6 +108,7 @@ export default class UserInfoRoute extends React.Component {
                     birthDate={birthDate}
                     aboutYourself={aboutYourself}
                     username={friendUsername}
+                    onlineUsers={onlineUsers}
                 />
                 {
                     friendUsername == username
