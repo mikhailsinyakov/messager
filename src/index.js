@@ -46,8 +46,8 @@ class App extends React.Component {
                 if (status == 'Success') {
                     this.setState({username, updated: true});
                     if (username) {
-                        websocket.createConnection();
-                        websocket.sendUsername(username);
+                        websocket.create();
+                        websocket.send('username', { username });
                     }
                 }
                 
@@ -86,17 +86,18 @@ class App extends React.Component {
         this.getUsername();
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.username != this.state.username) {
+            this.getFriendRequestsInfo();
+            websocket.subscribe('friendshipStatus', this.getFriendRequestsInfo);
+        }
+    }
+
     componentWillUnmount() {
         this.abortControllers.forEach(controller => controller.abort());
         websocket.close();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.username != this.state.username) {
-            this.getFriendRequestsInfo();
-            websocket.friendshipStatusChanged(this.getFriendRequestsInfo);
-        }
-    }
 
     render() {
         if (!this.state.updated) {

@@ -29,6 +29,7 @@ export default class Dialog extends React.Component {
         this.checkIfAnotherUnreadMessages = this.checkIfAnotherUnreadMessages.bind(this);
         this.sendUnreadMessagesIndexesIfAny = this.sendUnreadMessagesIndexesIfAny.bind(this);
         this.abortControllers = [];
+        this.wsListenId = [];
     }
 
     getAndUpdateMessages() {
@@ -47,13 +48,14 @@ export default class Dialog extends React.Component {
     }
 
     listenOnWSEvents() {
-        websocket.gotNewMessage(obj => this.addMessage(obj.message));
-        websocket.gotNewMessageStatus(obj => this.updateMessageStatus(obj));
-        websocket.gotError(obj => {
+        const id1 = websocket.subscribe('newMessage', obj => this.addMessage(obj.message));
+        const id2 = websocket.subscribe('newMessageStatus', this.updateMessageStatus);
+        const id3 = websocket.subscribe('error', obj => {
             if (obj.errName == 'Specified user doesn\'t exist') {
                 this.addErrorTooltip(obj.message);
             }
         });
+        this.wsListenId.push(id1, id2, id3);
     }
  
     updateMessages(messages) {
@@ -76,9 +78,10 @@ export default class Dialog extends React.Component {
     }
 
     handleSubmit() {
-        const { username, match: { params: { penPalUsername } } } = this.props;
+        const { username: username1, 
+            match: { params: { penPalUsername: username2 } } } = this.props;
         const { newMessage: text } = this.state;
-        websocket.sendMessage(username, penPalUsername, text);
+        websocket.send('message', { username1, username2, text });
         this.setState({newMessage: ''});
     }
 
@@ -105,10 +108,11 @@ export default class Dialog extends React.Component {
     }
 
     sendUnreadMessagesIndexesIfAny() {
-        const { username, match: { params: { penPalUsername } } } = this.props;
+        const { username: username1, 
+            match: { params: { penPalUsername: username2 } } } = this.props;
         const anotherUnreadMessages = this.checkIfAnotherUnreadMessages();
         anotherUnreadMessages.forEach(index => {
-            websocket.sendChangedMessagesIndexes(username, penPalUsername, index);
+            websocket.send('indexOfChangedMessage', { username1, username2, index });
         });
     }
 
@@ -125,6 +129,7 @@ export default class Dialog extends React.Component {
 
     componentWillUnmount() {
         this.abortControllers.forEach(controller => controller.abort());
+        this.wsListenId.forEach(websocket.unsubscribe);
     }
 
     render() {

@@ -57,7 +57,6 @@ module.exports = function() {
     };
 
     this.changeFriendshipState = (req, res) => {
-        console.log(req.params, req.body)
         const targetUsername = req.params.username;
         const friendUsername = req.params.friendUsername;
         const newUserState = req.body.state;

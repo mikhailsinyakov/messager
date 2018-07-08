@@ -18,6 +18,7 @@ export default class Dialogs extends React.Component {
         this.listenOnWSEvents = this.listenOnWSEvents.bind(this);
         this.updateDialogs = this.updateDialogs.bind(this);
         this.abortControllers = [];
+        this.wsListenId = [];
     }
 
     getAndUpdateDialogs() {
@@ -40,8 +41,9 @@ export default class Dialogs extends React.Component {
     }
 
     listenOnWSEvents() {
-        websocket.gotNewMessage(this.getAndUpdateDialogs);
-        websocket.gotNewMessageStatus(this.getAndUpdateDialogs);
+        const id1 = websocket.subscribe('newMessage', this.getAndUpdateDialogs);
+        const id2 = websocket.subscribe('newMessageStatus', this.getAndUpdateDialogs);
+        this.wsListenId.push(id1, id2);
     }
 
     componentDidMount() {
@@ -51,6 +53,7 @@ export default class Dialogs extends React.Component {
 
     componentWillUnmount() {
         this.abortControllers.forEach(controller => controller.abort());
+        this.wsListenId.forEach(websocket.unsubscribe);
     }
 
     render() {

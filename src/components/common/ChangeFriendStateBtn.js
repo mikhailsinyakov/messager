@@ -16,15 +16,15 @@ export default class changeFriendStateBtn extends React.Component {
     }
 
     handleClick() {
-        const { newFriendState, username, friendUsername, } = this.props;
+        const { username: username1, friendUsername: username2, newFriendState } = this.props;
         const controller = new AbortController();
         const { signal } = controller;
         this.abortControllers.push(controller);
 
-        friendshipController.changeFriendshipState(username, friendUsername, newFriendState, signal)
+        friendshipController.changeFriendshipState(username1, username2, newFriendState, signal)
             .then(data => {
                 if (data.status == 'Success') {
-                    websocket.sendUsernamesWithChangedStatus(username, friendUsername);
+                    websocket.send('usernamesWithChangedStatus', { username1, username2 });
                 }
             }).catch(err => console.error('Network error'));
     }

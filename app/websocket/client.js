@@ -3,22 +3,24 @@
 export default (function websocket() {
 
     let ws;
+    let subscribers = {};
 
-    function createConnection() {
-        if (!ws) {
-            const host = process.env.APP_HOST;
-            const port = process.env.PORT;
-            const uri = `ws://${host}:${port}`;
-            ws = new WebSocket(uri);
-        }
-    }
+    const createConnection = () => {
+        const host = process.env.APP_HOST;
+        const port = process.env.PORT;
+        const uri = `ws://${host}:${port}`;
+        ws = new WebSocket(uri);
+    };
 
-    function ready (fn) {
+    const ready = fn => {
+        if (!ws) createConnection();
         let fails = 0;
         if (ws.readyState == 0) {
             ws.addEventListener('open', fn);
         }
-        else if (ws.readyState == 1) fn();
+        else if (ws.readyState == 1) {
+            fn();
+        }
         else {
             fails++;
             if (fails < 5) {
@@ -29,73 +31,63 @@ export default (function websocket() {
                 console.error('Failed to recreate WebSocket connection');
             }
         }
-    }
+    };
 
-    function sendJSON (obj) {
-        ws.send(JSON.stringify(obj));
-    }
-
-    function sendUsername (username) {
-        ready(() => sendJSON({event: 'connection is open', username}));
-    }
-
-    function sendUsernamesWithChangedStatus (username1, username2) {
-        ready(() => sendJSON({event: 'friendship status changed', username1, username2}));
-    }
-
-    function sendMessage(username1, username2, text) {
-        ready(() => sendJSON({event: 'new message', username1, username2, text}));
-    }
-
-    function sendChangedMessagesIndexes(username1, username2, index) {
-        ready(() => sendJSON({
-            event: 'message status has changed', 
-            username1, 
-            username2, 
-            index
-        }));
-    }
-
-    function onMessage (event, fn) {
-        if (!ws) createConnection();
-        ws.addEventListener('message', message => {
-            const { data } = message;
-            const obj = JSON.parse(data);
-            if (obj.event == event) fn(obj);
+    const listenMessages = () => {
+        ready(() => {
+            ws.addEventListener('message', message => {
+                const { data } = message;
+                const obj = JSON.parse(data);
+                const { event } = obj;
+                for (const id in subscribers) {
+                    if (event == subscribers[id].event) {
+                        subscribers[id].fn(obj);
+                    }
+                }
+            });
         });
     }
+
+    const sendJSON = obj => ready(() => ws.send(JSON.stringify(obj)));
+
+    const subscribe =  (event, fn) => {
+        const id = +new Date() + Math.random();
+        subscribers[id] = { event, fn };
+        return id;
+    };
     
-    function friendshipStatusChanged (fn) {
-        onMessage('friendship status changed', fn);
-    }
+    const unsubscribe =  id => {
+        delete subscribers[id];
+    };
 
-    function gotNewMessage (fn) {
-        onMessage('new message', fn);
-    }
-
-    function gotNewMessageStatus (fn) {
-        onMessage('message status has changed', fn);
-    }
-
-    function gotError (fn) {
-        onMessage('error', fn);
-    }
-
-    function close() {
+    const closeConnection = () => {
         ws.close();
-    }
+        subscribers = {};
+    };
 
     return {
-        createConnection,
-        sendUsername,
-        sendUsernamesWithChangedStatus,
-        friendshipStatusChanged,
-        close,
-        sendMessage,
-        sendChangedMessagesIndexes,
-        gotNewMessage,
-        gotNewMessageStatus,
-        gotError
-    }
+        create: () => {
+            createConnection();
+            listenMessages()
+        },
+        send: (name, obj) => {
+            let event;
+            if (name == 'username') event = 'connection is open';
+            else if (name == 'usernamesWithChangedStatus') event = 'friendship status changed';
+            else if (name == 'message') event = 'new message';
+            else if (name == 'indexOfChangedMessage') event = 'message status has changed';
+            sendJSON({ event, ...obj });
+        },
+        subscribe: (name, fn) => {
+            let event;
+            if (name == 'friendshipStatus') event = 'friendship status changed';
+            else if (name == 'newMessage') event = 'new message';
+            else if (name == 'newMessageStatus') event = 'message status has changed';
+            else if (name == 'error') event = 'error';
+            return subscribe(event, fn);
+        },
+        unsubscribe,
+        close: closeConnection
+    };
 
 })();
