@@ -4,9 +4,7 @@ import React from 'react';
 
 export default function UserInfo (props) {
     const { username, firstName, lastName, phoneNumber,
-        city, birthDate, aboutYourself, onlineUsers} = props;
-
-    const isUserOnline = (() => !!onlineUsers.filter(user => user == username).length)();
+        city, birthDate, aboutYourself, isUserOnline} = props;
 
     return (
         <div id="userInfo">

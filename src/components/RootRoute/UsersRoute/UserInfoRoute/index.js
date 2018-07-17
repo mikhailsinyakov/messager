@@ -82,6 +82,20 @@ export default class UserInfoRoute extends React.Component {
         const { params: { username: friendUsername } } = match;
         const {firstName, lastName, phoneNumber,
             city, birthDate, aboutYourself} = this.state;
+        const { friendsList } = friendRequestsInfo;
+
+        const isUserOnline = (() => !!onlineUsers.filter(user => user == friendUsername).length)();
+        const isFriend = friendsList.includes(friendUsername);
+        let makeVideoCallLink = null;
+        if (isUserOnline && isFriend) {
+            makeVideoCallLink = (
+                <Link to={`/users/${username}/tryvideocall/${friendUsername}/true`}>
+                    <button type="button">
+                        Сделать видеозвонок
+                    </button>
+                </Link>
+            );
+        }
 
         const ActionButtons = () => (
             <React.Fragment>
@@ -95,6 +109,7 @@ export default class UserInfoRoute extends React.Component {
                         Написать сообщение
                     </button>
                 </Link>
+                {makeVideoCallLink}
             </React.Fragment>
         );
 
@@ -108,7 +123,7 @@ export default class UserInfoRoute extends React.Component {
                     birthDate={birthDate}
                     aboutYourself={aboutYourself}
                     username={friendUsername}
-                    onlineUsers={onlineUsers}
+                    isUserOnline={isUserOnline}
                 />
                 {
                     friendUsername == username

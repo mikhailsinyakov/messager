@@ -121,6 +121,22 @@ module.exports = function handleWebSocketConnection(server) {
                     }
                 }
             }
+            else if (event == 'video call') {
+                const { caller, receiver, type } = incomingBody;
+                const outgoingBody = { ...incomingBody };
+                const outgoingMessage = JSON.stringify(outgoingBody);
+                let toWho;
+                if (type == 'start' || type == 'stop') toWho = receiver;
+                else toWho = caller;
+                for (const username in activeUsers) {
+                    if (username == toWho) {
+                        activeUsers[username].forEach(connection => {
+                            connection.send(outgoingMessage);
+                        });
+                    }
+                }
+                
+            }
 
         });
 

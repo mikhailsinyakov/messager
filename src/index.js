@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter} from 'react-router-dom';
+import {BrowserRouter, Link} from 'react-router-dom';
 import websocket from '@app/websocket/client';
 
 import Header from './components/Header';
@@ -31,7 +31,8 @@ class App extends React.Component {
             },
             numUnreadMessages: 0,
             onlineUsers: [],
-            updated: false
+            updated: false,
+            incomingCall: null
         };
 
         this.abortControllers = [];
@@ -41,6 +42,9 @@ class App extends React.Component {
         this.updateFriendshipRequestsInfo = this.updateFriendshipRequestsInfo.bind(this);
         this.updateNumUnreadMessages = this.updateNumUnreadMessages.bind(this);
         this.updateOnlineUsers = this.updateOnlineUsers.bind(this);
+        this.cancelCall = this.cancelCall.bind(this);
+        this.changeIncomingCallState = this.changeIncomingCallState.bind(this);
+        this.deleteIcomingCallDialog = this.deleteIcomingCallDialog.bind(this);
     }
 
     getUsername() {
@@ -116,6 +120,30 @@ class App extends React.Component {
         this.setState({ onlineUsers });
     }
 
+    cancelCall(caller) {
+        const obj = {
+            caller,
+            receiver: this.state.username,
+            type: 'deny'
+        };
+        websocket.send('videoCall', obj);
+        this.deleteIcomingCallDialog();
+    }
+
+    deleteIcomingCallDialog() {
+        this.setState({incomingCall: null});
+    }
+
+    changeIncomingCallState(obj) {
+        const { caller, type } = obj;
+        let incomingCall;
+        if (type == 'start') {
+            incomingCall = { caller };
+        }
+        else incomingCall = null;
+        this.setState({incomingCall});
+    }
+
     componentDidMount() {
         this.getUsername();
     }
@@ -128,6 +156,7 @@ class App extends React.Component {
             websocket.subscribe('newMessage', this.getNumUnreadMessages);
             websocket.subscribe('newMessageStatus', this.getNumUnreadMessages);
             websocket.subscribe('onlineUsersChanged', this.updateOnlineUsers);
+            websocket.subscribe('videoCall', this.changeIncomingCallState)
         }
     }
 
@@ -141,7 +170,26 @@ class App extends React.Component {
         if (!this.state.updated) {
             return null;
         }
-        const { username, friendRequestsInfo, numUnreadMessages, onlineUsers } = this.state;
+        const { username, friendRequestsInfo, 
+            numUnreadMessages, onlineUsers, incomingCall } = this.state;
+        let incomingCallDialog = null;
+        if (incomingCall) {
+            incomingCallDialog = (
+                <div>
+                    <p>Вас вызывает {incomingCall.caller}</p>
+                    <Link 
+                        to={`/users/${username}/tryvideocall/${incomingCall.caller}/false`}
+                        onClick={this.deleteIcomingCallDialog}>
+                            Ответить
+                    </Link>
+                    <button 
+                        type="button" 
+                        onClick={() => this.cancelCall(incomingCall.caller)}>
+                            Отклонить
+                    </button>
+                </div>
+            );
+        }
         return (
             <React.Fragment>
                 <Header 
@@ -155,6 +203,7 @@ class App extends React.Component {
                     friendRequestsInfo={friendRequestsInfo}
                     onlineUsers={onlineUsers}
                 />
+                {incomingCallDialog}
             </React.Fragment>
         );
     }
