@@ -12,29 +12,46 @@ export default class VideoCall extends React.Component {
         this.currUsername = currUsername;
         this.username = username;
         this.friendUsername = friendUsername;
+        this.myCamStream = null;
+        this.myCamRef = React.createRef();
         this.state = {
             
         };
-        this.askForPermission = this.askForPermission.bind(this);
+        this.getMedia = this.getMedia.bind(this);
+        this.broadcastStreamOn = this.broadcastStreamOn.bind(this);
+        this.stopBroadcastStreamFrom = this.stopBroadcastStreamFrom.bind(this);
     }
 
+    getMedia(video, audio) {
+        return navigator.mediaDevices.getUserMedia({ video, audio });
+    }
 
-    askForPermission() {
-        const constraints = { video: true, audio: true };
-        navigator.mediaDevices.getUserMedia(constraints)
-            .then(stream => {})
-            .catch(err => console.error(err));
+    broadcastStreamOn(ref) {
+        ref.current.srcObject = this.myCamStream;
+    }
+
+    stopBroadcastStreamFrom(ref) {
+        ref.current.srcObject = null;
+        this.myCamStream.getTracks()[0].stop();
     }
 
     componentDidMount() {
-        this.askForPermission();
+        this.getMedia(true, false)
+            .then(stream => {
+                this.myCamStream = stream;
+                this.assignStreamToVideoElement(this.myCamRef);
+            })
+            .catch(err => console.error(err));
     }
 
+    componentWillUnmount() {
+        this.stopBroadcastStreamFrom(this.myCamRef);
+    }
 
     render() {
         
         return (
-                <h1>Ok</h1>
+                <video ref={this.myCamRef} width="400" height="250" autoPlay></video>
             );
 
 
