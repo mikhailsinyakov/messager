@@ -12,46 +12,48 @@ export default class VideoCall extends React.Component {
         this.currUsername = currUsername;
         this.username = username;
         this.friendUsername = friendUsername;
-        this.myCamStream = null;
-        this.myCamRef = React.createRef();
+        this.myVideoRef = React.createRef();
         this.state = {
             
         };
         this.getMedia = this.getMedia.bind(this);
-        this.broadcastStreamOn = this.broadcastStreamOn.bind(this);
-        this.stopBroadcastStreamFrom = this.stopBroadcastStreamFrom.bind(this);
+        this.playStream = this.playStream.bind(this);
+        this.stopPlayingStream = this.stopPlayingStream.bind(this);
     }
 
     getMedia(video, audio) {
         return navigator.mediaDevices.getUserMedia({ video, audio });
     }
 
-    broadcastStreamOn(ref) {
-        ref.current.srcObject = this.myCamStream;
+    playStream(ref, stream) {
+        ref.current.srcObject = stream;
     }
 
-    stopBroadcastStreamFrom(ref) {
+    stopPlayingStream(ref) {
+        const stream = ref.current.srcObject;
+        stream.getTracks().forEach(track => track.stop());
         ref.current.srcObject = null;
-        this.myCamStream.getTracks()[0].stop();
     }
 
     componentDidMount() {
-        this.getMedia(true, false)
-            .then(stream => {
-                this.myCamStream = stream;
-                this.assignStreamToVideoElement(this.myCamRef);
+        this.getMedia(true, true)
+            .then(myCamStream => {
+                const videoTrack = myCamStream.getVideoTracks()[0].clone();
+                const myCamVideoStream = new MediaStream([videoTrack]);
+
+                this.playStream(this.myVideoRef, myCamVideoStream);
             })
             .catch(err => console.error(err));
     }
 
     componentWillUnmount() {
-        this.stopBroadcastStreamFrom(this.myCamRef);
+        this.stopPlayingStream(this.myVideoRef);
     }
 
     render() {
         
         return (
-                <video ref={this.myCamRef} width="400" height="250" autoPlay></video>
+                <video ref={this.myVideoRef} width="400" height="250" autoPlay></video>
             );
 
 
