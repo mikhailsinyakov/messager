@@ -78,6 +78,7 @@ export default (function websocket() {
             else if (name == 'indexOfChangedMessage') event = 'message status has changed';
             else if (name == 'userIsTyping') event = 'user is typing';
             else if (name == 'videoCall') event = 'video call';
+            else if (name == 'RTCSignalling') event = 'RTC signalling';
             sendJSON({ event, ...obj });
         },
         subscribe: (name, fn) => {
@@ -88,6 +89,7 @@ export default (function websocket() {
             else if (name == 'userIsTyping') event = 'user is typing';
             else if (name == 'onlineUsersChanged') event = 'list of online users has changed';
             else if (name == 'videoCall') event = 'video call';
+            else if (name == 'RTCSignalling') event = 'RTC signalling';
             else if (name == 'error') event = 'error';
             return subscribe(event, fn);
         },

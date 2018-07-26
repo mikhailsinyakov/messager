@@ -88,10 +88,12 @@ export default class TryVideoCall extends React.Component {
 
 
     render() {
-        if (this.currUsername != this.username) {
-            return <Redirect to={`/users/${this.currUsername}/info`}/>
-        }
+        const { username, currUsername, friendUsername, isCaller } = this;
         const { mediaDevicesStatus, callStatus } = this.state;
+
+        if (currUsername != username) {
+            return <Redirect to={`/users/${currUsername}/info`}/>
+        }
 
         if (mediaDevicesStatus != 'allowed') {
             if (mediaDevicesStatus != 'forbidden') {
@@ -108,21 +110,22 @@ export default class TryVideoCall extends React.Component {
                 return <h1>{message}</h1>
             }
             else {
-                return <Redirect to={`/users/${this.username}/info`}/>;
+                return <Redirect to={`/users/${username}/info`}/>;
             }
         }
 
         if (callStatus == 'answer') {
+            
             return (
                 <Redirect 
-                    to={`/users/${this.username}/videocall/${this.friendUsername}`}
+                    to={`/users/${username}/videocall/${friendUsername}/${isCaller}`}
                 />
             );
         }
         else  {
             let message;
-            if (callStatus == 'waiting') message = `Ожидайте ответа от ${this.friendUsername}`;
-            else message = `${this.friendUsername} отклонил Ваш вызов`;
+            if (callStatus == 'waiting') message = `Ожидайте ответа от ${friendUsername}`;
+            else message = `${friendUsername} отклонил Ваш вызов`;
 
             return <h1>{message}</h1>;
         }

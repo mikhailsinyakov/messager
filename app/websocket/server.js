@@ -35,6 +35,7 @@ module.exports = function handleWebSocketConnection(server) {
     };
 
     ws.on('connection', connection => {
+        console.log(connection)
         let currUser = {};
 
         connection.on('message', incomingMessage => {
@@ -136,6 +137,18 @@ module.exports = function handleWebSocketConnection(server) {
                     }
                 }
                 
+            }
+            else if (event == 'RTC signalling') {
+                const { username1, username2 } = incomingBody;
+                const outgoingBody = { ...incomingBody };
+                const outgoingMessage = JSON.stringify(outgoingBody);
+                for (const username in activeUsers) {
+                    if (username == username2) {
+                        activeUsers[username].forEach(connection => {
+                            connection.send(outgoingMessage);
+                        });
+                    }
+                }
             }
 
         });

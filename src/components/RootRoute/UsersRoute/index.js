@@ -65,7 +65,7 @@ export default function UsersRoute(props) {
                     )}
                 />
                 <Route 
-                    path={props.match.url + '/:username/videocall/:friendUsername'}
+                    path={props.match.url + '/:username/videocall/:friendUsername/:isCaller'}
                     render={({match}) => ( 
                         <VideoCall 
                             match={match} username={props.username} 
