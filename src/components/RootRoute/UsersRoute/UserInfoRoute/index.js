@@ -27,6 +27,7 @@ export default class UserInfoRoute extends React.Component {
         this.getUserInfo = this.getUserInfo.bind(this);
         this.addUserInfoToState = this.addUserInfoToState.bind(this);
         this.toPrettierFormat = this.toPrettierFormat.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     getUserInfo() {
@@ -66,6 +67,10 @@ export default class UserInfoRoute extends React.Component {
         return `+7 (${area}) ${group1}-${group2}-${group3}`;
     }
 
+    handleClick(url) {
+        window.location.href = url;
+    }
+
     componentDidMount() {
         this.getUserInfo();
     }
@@ -91,7 +96,7 @@ export default class UserInfoRoute extends React.Component {
                     friendRequestsInfo={friendRequestsInfo}
                 />
                 <Link to={`/users/${username}/dialogs/${friendUsername}`}>
-                    <button type="button">
+                    <button className="action-buttons" type="button">
                         Написать сообщение
                     </button>
                 </Link>
@@ -112,17 +117,23 @@ export default class UserInfoRoute extends React.Component {
                 />
                 {
                     friendUsername == username
-                        ? <Link to={match.url + '/edit'}>Изменить</Link>
+                        ? <button 
+                            type="button" onClick={() => this.handleClick(match.url + '/edit')}
+                            className="action-buttons change-data"
+                        >
+                            Изменить данные
+                        </button>
                         : <ActionButtons/>
                 }
             </React.Fragment>
         );
 
         const showEditingInfo = () => (
-            <ChangeInfo username={username}
+            <ChangeInfo
+                username={username}
                 matchedUsername={friendUsername}
                 infoState={this.state}
-                getUserInfo={this.getUserInfo} 
+                getUserInfo={this.getUserInfo}
                 addUserInfoToState={this.addUserInfoToState}
                 toPrettierFormat={this.toPrettierFormat}
             />

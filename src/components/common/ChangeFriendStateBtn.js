@@ -35,7 +35,7 @@ export default class changeFriendStateBtn extends React.Component {
 
     render() {
         return (
-            <button type="button" onClick={this.handleClick}>
+            <button className="action-buttons" type="button" onClick={this.handleClick}>
                 {this.props.description}
             </button>
         );

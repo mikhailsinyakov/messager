@@ -38,9 +38,12 @@ export default class Settings extends React.Component {
         }
 
         return (
-            <div id="settings">
-                <img src={this.state.imgSrc} height={200} onError={this.handleImgError} />
-                <ChangePhoto updatePhoto={this.updateImg}/>
+            <div className="settings">
+                <div className="user-avatar-wrapper">
+                    <img className="user-avatar" src={this.state.imgSrc} height={200} 
+                        onError={this.handleImgError} />
+                    <ChangePhoto updatePhoto={this.updateImg}/>
+                </div>
                 <ChangePassword username={username} />
             </div>
         );

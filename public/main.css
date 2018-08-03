@@ -1,7 +1,223 @@
+main .dialog .message-wrapper .message, main .dialogs .dialog-item .last-message {
+  display: inline-block;
+  margin-bottom: 0.5em;
+  padding: 0 1em;
+  border-radius: 0.3em;
+  text-align: center;
+}
 
-.right-align {
-    text-align: right;
+main .settings .user-avatar-wrapper .user-avatar, main .user-data .user-avatar {
+  height: 12em;
+  border-radius: 1em;
 }
-.not-read {
-    background-color: grey;
+
+main .search .users .user-item, main .friends .friend-item {
+  display: flex;
+  justify-content: space-between;
+  background-color: #c3d4b3;
+  padding: 1em;
+  margin: 1em;
+  border-radius: 1em;
 }
+
+html {
+  font-family: "Ubuntu Condensed", sans-serif;
+  font-size: 10px;
+}
+
+body {
+  min-width: 320px;
+}
+body h1, body h2, body h3 {
+  text-align: center;
+}
+body h1 {
+  font-size: 2em;
+}
+body h2 {
+  font-size: 1.5em;
+}
+body button, body input {
+  font: inherit;
+}
+body input, body textarea {
+  border: 1px solid #AFC4B2;
+  border-radius: 0.5em;
+  width: 15em;
+  padding: 0.3em 0.5em;
+  margin-top: 0.5em;
+  margin-left: 0.5em;
+}
+body input:focus, body textarea:focus {
+  border-color: #2F44A2;
+}
+body button {
+  margin-top: 0.5em;
+  padding: 0.3em 0.5em;
+  box-shadow: 4px 3px 5px;
+  border: 1px solid #9cbbad;
+  border-radius: 0.4em;
+}
+body ul {
+  list-style: none;
+}
+body a {
+  font-size: 1em;
+  text-decoration: none;
+}
+
+header {
+  position: fixed;
+  min-width: 320px;
+  top: 0;
+  left: 5px;
+  right: 5px;
+  padding: 1em;
+  border-radius: 1em;
+  background-color: #6376CB;
+}
+header.onlyNav {
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+header h1 {
+  color: #20201B;
+}
+header ul {
+  padding: 0;
+}
+header ul li {
+  display: inline;
+  margin-right: 0.5em;
+}
+header ul li:last-child {
+  float: right;
+}
+header a {
+  color: #CBDCB6;
+}
+header a:hover {
+  color: #EEFE00;
+}
+
+main {
+  padding: 1em;
+}
+main .user-data {
+  display: flex;
+  position: relative;
+}
+main .user-data .online {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: red;
+}
+main .user-data .user-avatar {
+  margin: 1em 2em 0 0;
+}
+main .user-data .user-info .name {
+  margin-right: 10px;
+}
+main .friends .friend-item .username {
+  margin-top: 1em;
+}
+main .friends .action-buttons {
+  font-size: 0.8em;
+}
+main .dialogs .dialog-item {
+  background-color: #20e44a;
+  padding: 0.5em 1em;
+  border-radius: 1em;
+  margin: 1em;
+  cursor: pointer;
+}
+main .dialogs .dialog-item.right-align {
+  text-align: right;
+}
+main .dialogs .dialog-item .last-message {
+  background-color: #7d7272;
+}
+main .dialogs .dialog-item .last-message .text, main .dialogs .dialog-item .last-message .date {
+  margin: 0.4em;
+}
+main .dialogs .dialog-item .last-message .date {
+  font-size: 0.6em;
+}
+main .dialogs .dialog-item .not-read {
+  background-color: red;
+}
+main .dialog .error {
+  color: red;
+}
+main .dialog .message-wrapper.right-align {
+  text-align: right;
+}
+main .dialog .message-wrapper .message {
+  background-color: #20e44a;
+}
+main .dialog .message-wrapper .message.not-read {
+  background-color: red;
+}
+main .dialog .message-wrapper .message .text, main .dialog .message-wrapper .message .date {
+  margin: 0.4em;
+}
+main .dialog .message-wrapper .message .date {
+  font-size: 0.6em;
+}
+main .action-buttons {
+  background-color: #64c5ffeb;
+  color: #444a39;
+}
+main .change-data {
+  margin-left: 50%;
+}
+main .settings {
+  display: flex;
+  justify-content: space-around;
+}
+main .settings .user-avatar-wrapper {
+  text-align: center;
+}
+main .settings .user-avatar-wrapper .user-avatar {
+  display: block;
+}
+main .settings .change-password {
+  margin-top: 2em;
+  text-align: center;
+}
+main .settings .change-password .error {
+  color: red;
+}
+main .search .users {
+  margin-top: 2em;
+  padding: 0 1em;
+}
+main .search .users .user-item {
+  padding: 1em 5em 1em 1em;
+}
+main .search .users .user-item .username {
+  margin-top: 1em;
+}
+main .search .users .user-item .user-avatar {
+  height: 3em;
+  border-radius: 0.3em;
+}
+
+@media (min-width: 490px) {
+  html {
+    font-size: 1.05em;
+  }
+}
+@media (min-width: 560px) {
+  html {
+    font-size: 1.1em;
+  }
+}
+@media (min-width: 700px) {
+  html {
+    font-size: 1.15em;
+  }
+}
+
+/*# sourceMappingURL=main.css.map */

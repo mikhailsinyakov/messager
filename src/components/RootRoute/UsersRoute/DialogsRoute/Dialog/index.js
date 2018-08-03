@@ -25,12 +25,15 @@ export default class Dialog extends React.Component {
         this.updateMessages = this.updateMessages.bind(this);
         this.updateMessageStatus = this.updateMessageStatus.bind(this);
         this.handleInput = this.handleInput.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleNewMessage = this.handleNewMessage.bind(this);
         this.addMessage = this.addMessage.bind(this);
         this.toggleTypingMessage = this.toggleTypingMessage.bind(this);
         this.addErrorTooltip = this.addErrorTooltip.bind(this);
         this.checkIfAnotherUnreadMessages = this.checkIfAnotherUnreadMessages.bind(this);
         this.sendUnreadMessagesIndexesIfAny = this.sendUnreadMessagesIndexesIfAny.bind(this);
+        this.scrollToBottom = this.scrollToBottom.bind(this);
         this.abortControllers = [];
         this.wsListenId = [];
     }
@@ -98,7 +101,15 @@ export default class Dialog extends React.Component {
         this.setState({newMessage: e.target.value});
     }
 
+    handleKeyPress(e) {
+        if (e.key == 'Enter') this.handleNewMessage();
+    }
+
     handleSubmit() {
+        this.handleNewMessage();
+    }
+
+    handleNewMessage() {
         const { username: username1, 
             match: { params: { penPalUsername: username2 } } } = this.props;
         const { newMessage: text } = this.state;
@@ -137,6 +148,11 @@ export default class Dialog extends React.Component {
         });
     }
 
+    scrollToBottom() {
+        const page = document.documentElement;
+        page.scrollTop = page.scrollHeight;
+    }
+
     componentDidMount() {
         this.getAndUpdateMessages();
         this.listenOnWSEvents();
@@ -146,6 +162,10 @@ export default class Dialog extends React.Component {
         if (prevState.messages.length != this.state.messages.length) {
             this.sendUnreadMessagesIndexesIfAny();
         }
+        if (prevState.messages.length != this.state.messages.length || 
+            (!prevState.penPalIsTyping && this.state.penPalIsTyping)) {
+                this.scrollToBottom();
+            }
     }
 
     componentWillUnmount() {
@@ -161,27 +181,35 @@ export default class Dialog extends React.Component {
             date = dateToPrettierFormat(new Date(date));
             
             const messageClass = classnames({
-                'right-align': sender == username,
+                'message': true,
                 'not-read': !read
+            });
+            const messageWrapperClass = classnames({
+                'message-wrapper': true,
+                'right-align': sender == username
             });
 
             return (
-                <p className={messageClass} key={i}>
-                    {date}
-                    {text}
-                </p>
-            )
+                <div className={messageWrapperClass} key={i}>
+                    <div className={messageClass}>
+                        <p className="text">{text}</p>
+                        <p className="date">{date}</p>
+                    </div>
+                </div>
+            );
         });
 
         const error = this.state.error 
-            ? <p>Пользователь, которому вы написали сообщение не существует</p> 
+            ? <p className="error">Пользователь, которому вы написали сообщение не существует</p> 
             : null;
 
         return (
-            <div>
+            <div className="dialog">
                 {messages}
                 {this.state.penPalIsTyping && <p>{penPalUsername} печатает сообщение</p>}
-                <input type="text" value={this.state.newMessage} onChange={this.handleInput}/>
+                <input type="text" autoFocus
+                    value={this.state.newMessage} onChange={this.handleInput}
+                    onKeyPress={this.handleKeyPress}/>
                 <button type="button" onClick={this.handleSubmit}>Отправить</button>
                 {error}
             </div>

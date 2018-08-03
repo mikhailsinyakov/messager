@@ -18,6 +18,7 @@ export default class Search extends React.Component {
         this.handleInput = this.handleInput.bind(this);
         this.handleSearchResults = this.handleSearchResults.bind(this);
         this.handleImgError = this.handleImgError.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     handleInput(e) {
@@ -39,6 +40,10 @@ export default class Search extends React.Component {
         e.target.src = '/public/photos/placeholder.png';
     }
 
+    handleClick(url) {
+        window.location.href = url;
+    }
+
     componentDidMount() {
         this.handleSearchResults();
     }
@@ -54,28 +59,27 @@ export default class Search extends React.Component {
     render() {
         const { onlineUsers } = this.props;
         const checkUserOnline = username => !!onlineUsers.filter(user => user == username).length;
+        const onlineText = username => checkUserOnline(username) ? '(Online)' : '';
 
         const users = this.state.users.map((val, i) => (
-            <div key={i}> 
-                <Link to={`/users/${val.username}/info`}>
-                    <img src={`/public/photos/${val.username}-avatar.jpg`}
-                        height={100}
-                        onError={this.handleImgError} />
-                </Link>
-                <Link to={`/users/${val.username}/info`}>
+            <div key={i} className="user-item" 
+                onClick={() => this.handleClick(`/users/${val.username}/info`)}> 
+                <img src={`/public/photos/${val.username}-avatar.jpg`}
+                    className="user-avatar"
+                    onError={this.handleImgError} />
+                <span className="username">
                     {val.firstName &&  val.lastName 
-                        ? <span> {val.firstName} {val.lastName}</span> 
-                        : <span>{val.username}</span>}
-                </Link>
-                {checkUserOnline(val.username) && <span>Online</span>}
+                        ? `${val.firstName} ${val.lastName} ${onlineText(val.username)}`
+                        : `${val.username} ${onlineText(val.username)}`}
+                </span>
             </div>
         ));
 
         return (
-            <div id="search">
+            <div className="search">
                 <input type="text" name="query" placeholder="Введите запрос"
                     onChange={this.handleInput} value={this.state.query} />
-                <div id="users">
+                <div className="users">
                     {users}
                 </div>
             </div>

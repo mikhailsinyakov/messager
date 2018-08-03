@@ -20,6 +20,7 @@ export default class Friends extends React.Component {
         this.abortControllers = [];
         this.handleImgError = this.handleImgError.bind(this);
         this.updateUserInfo = this.updateUserInfo.bind(this);
+        this.getUserInfo = this.getUserInfo.bind(this);
     }
     
     handleImgError(e) {
@@ -30,19 +31,19 @@ export default class Friends extends React.Component {
         this.setState({userInfo});
     }
 
-    componentDidMount() {
+    getUserInfo() {
         const { friendRequestsInfo } = this.props;
         const { friendsList, usersWaitingForAnswer } = friendRequestsInfo;
         const getUserInfoPromises = [];
 
-        friendsList.forEach(username => {
+        usersWaitingForAnswer.forEach(username => {
             const controller = new AbortController();
             const { signal } = controller;
             this.abortControllers.push(controller);
             getUserInfoPromises.push(userController.getUserInfo(username, signal));
         });
 
-        usersWaitingForAnswer.forEach(username => {
+        friendsList.forEach(username => {
             const controller = new AbortController();
             const { signal } = controller;
             this.abortControllers.push(controller);
@@ -63,7 +64,24 @@ export default class Friends extends React.Component {
                 this.updateUserInfo(userInfoObj);
             }).catch(err => console.error('Network error'));
     }
+
+    componentDidMount() {
+        const { friendRequestsInfo: { usersWaitingForAnswer, friendsList} } = this.props;
+        if (usersWaitingForAnswer.length || friendsList.length) this.getUserInfo();
+    }
     
+    componentDidUpdate(prevProps) {
+        const { friendRequestsInfo: { usersWaitingForAnswer, friendsList} } = this.props;
+        const { friendRequestsInfo: { 
+            usersWaitingForAnswer: prevUsersWaitingForAnswer, 
+            friendsList: prevFriendsList
+        } } = prevProps;
+        if (usersWaitingForAnswer.length != prevUsersWaitingForAnswer.length 
+            || friendsList.length != prevFriendsList.length) {
+                this.getUserInfo();
+            }
+    }
+
     componentWillUnmount() {
         this.abortControllers.forEach(controller => controller.abort());
     }
@@ -97,20 +115,24 @@ export default class Friends extends React.Component {
             );
         }
         const checkUserOnline = username => !!onlineUsers.filter(user => user == username).length;
+        const onlineText = username => checkUserOnline(username) ? "(Online)" : "";
 
         const createFriendElem = (friendUsername, isFriend) => (
-            <div key={friendUsername}>
+            <div className="friend-item" key={friendUsername}>
                 <Link to={`/users/${friendUsername}/info`}>
                     <img src={`/public/photos/${friendUsername}-avatar.jpg`}
                         height={50}
                         onError={this.handleImgError} />
                 </Link>
-                <Link to={`/users/${friendUsername}/info`}>
+                <Link to={`/users/${friendUsername}/info`} className="username">
                     {userInfo[friendUsername] 
-                        ? <span> {userInfo[friendUsername]}</span> 
-                        : <span>{friendUsername}</span>}
+                        ? <span>
+                            {userInfo[friendUsername]} {onlineText(friendUsername)}
+                        </span> 
+                        : <span className="username">
+                            {friendUsername} {onlineText(friendUsername)}
+                        </span>}
                 </Link>
-                {checkUserOnline(friendUsername) && <span>Online</span>}
                 {isFriend 
                     ?   <ChangeFriendStateProto 
                             description="Убрать из друзей" newFriendState="rejected"
@@ -139,7 +161,7 @@ export default class Friends extends React.Component {
         });
         
         return (
-            <div id="friends">
+            <div className="friends">
                 {possibleFriendsElems}
                 {friendsElems}
             </div>

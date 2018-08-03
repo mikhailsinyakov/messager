@@ -31,7 +31,7 @@ export default class ChangeInfo extends React.Component {
     }
 
     validatePhoneNumber(phoneNumber) {
-        if (!phoneNumber) return phoneNumber;
+        if (!phoneNumber) return '';
         phoneNumber = phoneNumber.replace(/\D/g, '');
         if (phoneNumber[0] == '7' || phoneNumber[0] == '8') {
             phoneNumber = phoneNumber.slice(1);
@@ -48,7 +48,7 @@ export default class ChangeInfo extends React.Component {
     }
 
     handleSubmit(e) {
-        const userInfo = this.state;
+        const userInfo = { ...this.state };
         userInfo.phoneNumber = this.validatePhoneNumber(userInfo.phoneNumber);
 
         const controller = new AbortController();

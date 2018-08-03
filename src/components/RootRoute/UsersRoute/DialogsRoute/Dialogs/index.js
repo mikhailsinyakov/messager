@@ -3,6 +3,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import websocket from '@app/websocket/client';
+import dateToPrettierFormat from '@src/helpers/dateToPrettierFormat';
 
 import DialogController from '@app/controllers/dialogController.client';
 
@@ -17,6 +18,7 @@ export default class Dialogs extends React.Component {
         this.getAndUpdateDialogs = this.getAndUpdateDialogs.bind(this);
         this.listenOnWSEvents = this.listenOnWSEvents.bind(this);
         this.updateDialogs = this.updateDialogs.bind(this);
+        this.handleClick = this.handleClick.bind(this);
         this.abortControllers = [];
         this.wsListenId = [];
     }
@@ -46,6 +48,10 @@ export default class Dialogs extends React.Component {
         this.wsListenId.push(id1, id2);
     }
 
+    handleClick(url) {
+        window.location.href = url;
+    }
+
     componentDidMount() {
         this.getAndUpdateDialogs();
         this.listenOnWSEvents();
@@ -60,18 +66,26 @@ export default class Dialogs extends React.Component {
         const { match: { url } } = this.props;
         const dialogs = this.state.dialogs.map((dialog, i) => {
             const { penPalUsername, lastMessage } = dialog;
+            const { text, read, date, sender } = lastMessage;
+            let divClass = 'dialog-item';
+            if (sender != penPalUsername ) divClass += ' right-align';
+            let lastMessageClass = 'last-message';
+            if (!read) lastMessageClass += ' not-read';
             return (
-                <div key={i}>
-                    <Link to={`${url}/${penPalUsername}`}>
-                        <p>{penPalUsername}</p>
-                        <p>{lastMessage.text}</p>
-                    </Link>
+                <div className={divClass} key={i} 
+                    onClick={() => this.handleClick(`${url}/${penPalUsername}`)}>
+                        <h3 className="username">{penPalUsername}</h3>
+                        <div className={lastMessageClass}>
+                            <p className="text">{text}</p>
+                            <p className="date">{dateToPrettierFormat(new Date(date))}</p>
+                        </div>
                 </div>
             )
         });
 
         return (
-            <div id="dialogs">
+            <div className="dialogs">
+                <h2>Диалоги</h2>
                 {dialogs}
             </div>
         );

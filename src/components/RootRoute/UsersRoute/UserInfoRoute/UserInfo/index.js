@@ -9,18 +9,19 @@ export default function UserInfo (props) {
     const isUserOnline = (() => !!onlineUsers.filter(user => user == username).length)();
 
     return (
-        <div id="userInfo">
-            <img src={`/public/photos/${username}-avatar.jpg`}
-                height={200}
+        <div className="user-data">
+            <img className="user-avatar" src={`/public/photos/${username}-avatar.jpg`}
                 onError={e => e.target.src = '/public/photos/placeholder.png'}/>
-            {isUserOnline && <p>Online</p>}
-            <p><b>Ник:</b> {username}</p>
-            {firstName && <p><b>Имя:</b> {firstName}</p>}
-            {lastName && <p><b>Фамилия:</b> {lastName}</p>}
-            {phoneNumber && <p><b>Номер телефона:</b> {phoneNumber}</p>}
-            {city && <p><b>Город:</b> {city}</p>}
-            {birthDate && <p><b>Дата рождения:</b> {birthDate}</p>}
-            {aboutYourself && <p><b>О себе:</b> {aboutYourself}</p>}
+            {isUserOnline && <span className='online'>Online</span>}
+            <div className="user-info">
+                <p><span className="name">Ник:</span>{username}</p>
+                {firstName && <p><span className="name">Имя:</span>{firstName}</p>}
+                {lastName && <p><span className="name">Фамилия:</span>{lastName}</p>}
+                {phoneNumber && <p><span className="name">Номер телефона:</span>{phoneNumber}</p>}
+                {city && <p><span className="name">Город:</span>{city}</p>}
+                {birthDate && <p><span className="name">Дата рождения:</span>{birthDate}</p>}
+                {aboutYourself && <p><span className="name">О себе:</span>{aboutYourself}</p>}
+            </div>
         </div>
     );
 }

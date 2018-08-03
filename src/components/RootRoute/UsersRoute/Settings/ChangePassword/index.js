@@ -67,11 +67,11 @@ export default class ChangePassword extends React.Component {
             display: 'none'
         };
 
-        const errorMsg = this.state.error ? <p>{this.state.error}</p> : null;
+        const errorMsg = this.state.error ? <p className="error">{this.state.error}</p> : null;
         const successMsg = this.state.success ? <p>{this.state.success}</p> : null;
 
         return (
-            <form id="changePassword">
+            <form className="change-password">
                 <input type="text" name="username" value={this.props.username}
                     readOnly  autoComplete="username" style={usernameStyle}/><br/>
                 <input type="password" name="currentPassword" 

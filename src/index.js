@@ -31,7 +31,8 @@ class App extends React.Component {
             },
             numUnreadMessages: 0,
             onlineUsers: [],
-            updated: false
+            updated: false,
+            headerHeight: 0
         };
 
         this.abortControllers = [];
@@ -41,6 +42,7 @@ class App extends React.Component {
         this.updateFriendshipRequestsInfo = this.updateFriendshipRequestsInfo.bind(this);
         this.updateNumUnreadMessages = this.updateNumUnreadMessages.bind(this);
         this.updateOnlineUsers = this.updateOnlineUsers.bind(this);
+        this.setHeaderHeight = this.setHeaderHeight.bind(this);
     }
 
     getUsername() {
@@ -116,6 +118,12 @@ class App extends React.Component {
         this.setState({ onlineUsers });
     }
 
+    setHeaderHeight(height) {
+        if (this.state.headerHeight != height) {
+            this.setState({headerHeight: height});
+        }
+    }
+
     componentDidMount() {
         this.getUsername();
     }
@@ -141,19 +149,22 @@ class App extends React.Component {
         if (!this.state.updated) {
             return null;
         }
-        const { username, friendRequestsInfo, numUnreadMessages, onlineUsers } = this.state;
+        const { username, friendRequestsInfo, numUnreadMessages, 
+            onlineUsers, headerHeight } = this.state;
         return (
             <React.Fragment>
                 <Header 
                     username={username}
                     friendRequestsInfo={friendRequestsInfo}
                     numUnreadMessages={numUnreadMessages}
+                    setHeaderHeight={this.setHeaderHeight}
                 />
                 <RootRoute
                     username={username}
                     getUsername={this.getUsername}
                     friendRequestsInfo={friendRequestsInfo}
                     onlineUsers={onlineUsers}
+                    headerHeight={headerHeight}
                 />
             </React.Fragment>
         );
