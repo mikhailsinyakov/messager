@@ -14,10 +14,10 @@ export default (function websocket() {
         }
         else {
             scheme = 'ws';
-            host = 'https://localhost';
+            host = 'localhost';
         }
         
-        const uri = `${scheme}://${host}:${port}`;
+        const uri = `${scheme}://${host}`;
         ws = new WebSocket(uri);
     };
 
