@@ -8,8 +8,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "build": "webpack",
-    "postinstall": "webpack -p"
+    "build": "webpack"
   },
   "repository": {
     "type": "git",

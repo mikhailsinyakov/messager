@@ -6,15 +6,17 @@ export default (function websocket() {
     let subscribers = {};
 
     const createConnection = () => {
-        const host = process.env.APP_HOST;
-        const port = process.env.PORT;
-        const scheme = process.env.SECURE == 'true' ? 'wss' : 'ws';
-        console.log({host})
-        console.log({port})
-        console.log({scheme})
-        console.log(process.env.APP_HOST)
-        console.log(process.env.PORT)
-        console.log(process.env.SECURE)
+        let scheme, host;
+        const port = 80;
+        if (mode == 'production') {
+            scheme = 'wss';
+            host = 'https://messager1.herokuapp.com'
+        }
+        else {
+            scheme = 'ws';
+            host = 'https://localhost';
+        }
+        
         const uri = `${scheme}://${host}:${port}`;
         ws = new WebSocket(uri);
     };

@@ -1,6 +1,5 @@
 'use strict';
-const Dotenv = require('dotenv-webpack');
-
+const webpack = require('webpack');
 
 module.exports = {
     output: {
@@ -23,7 +22,9 @@ module.exports = {
         }
     },
     plugins: [
-        new Dotenv()
+        new webpack.DefinePlugin({
+            'mode': JSON.stringify('production')
+        })
     ],
     mode: 'production'
 };
