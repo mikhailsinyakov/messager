@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node app.js",
     "build": "webpack",
-    "heroku-postbuild": "webpack -p"
+    "postinstall": "webpack -p"
   },
   "repository": {
     "type": "git",
