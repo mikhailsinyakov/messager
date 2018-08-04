@@ -6,18 +6,18 @@ export default (function websocket() {
     let subscribers = {};
 
     const createConnection = () => {
-        let scheme, host;
-        const port = 80;
+        let scheme, host, uri;
         if (mode == 'production') {
             scheme = 'wss';
             host = 'messager1.herokuapp.com'
+            uri = `${scheme}://${host}`;
         }
         else {
             scheme = 'ws';
             host = 'localhost';
+            const port = 80;
+            uri = `${scheme}://${host}:${port}`;
         }
-        
-        const uri = `${scheme}://${host}`;
         ws = new WebSocket(uri);
     };
 
