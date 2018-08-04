@@ -8,7 +8,8 @@ export default (function websocket() {
     const createConnection = () => {
         const host = process.env.APP_HOST;
         const port = process.env.PORT;
-        const uri = `ws://${host}:${port}`;
+        const scheme = process.env.SECURE == 'true' ? 'wss' : 'ws';
+        const uri = `${scheme}://${host}:${port}`;
         ws = new WebSocket(uri);
     };
 
