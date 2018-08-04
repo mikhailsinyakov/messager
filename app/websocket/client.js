@@ -10,7 +10,7 @@ export default (function websocket() {
         const port = 80;
         if (mode == 'production') {
             scheme = 'wss';
-            host = 'https://messager1.herokuapp.com'
+            host = 'messager1.herokuapp.com'
         }
         else {
             scheme = 'ws';
