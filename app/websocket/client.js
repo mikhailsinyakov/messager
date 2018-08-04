@@ -9,6 +9,12 @@ export default (function websocket() {
         const host = process.env.APP_HOST;
         const port = process.env.PORT;
         const scheme = process.env.SECURE == 'true' ? 'wss' : 'ws';
+        console.log({host})
+        console.log({port})
+        console.log({scheme})
+        console.log(process.env.APP_HOST)
+        console.log(process.env.PORT)
+        console.log(process.env.SECURE)
         const uri = `${scheme}://${host}:${port}`;
         ws = new WebSocket(uri);
     };
